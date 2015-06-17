@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal" >
+    <TextView
+        android:textSize="24sp"
+        android:text="@string/mat_full"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:scaleType="center"
+        android:gravity="center"
+        android:background="#FF80C0FF" />
+    <EditText
+        android:id="@+id/username"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="@string/username" />
+    <EditText
+        android:id="@+id/password"
+        android:inputType="textPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:hint="@string/password"/>
+    <LinearLayout
+        android:id="@+id/login_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="#FFC0E0FF" 
+        style="?android:attr/buttonBarStyle"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            style="?android:attr/buttonBarButtonStyle"
+            android:onClick="onLogin" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            style="?android:attr/buttonBarButtonStyle"
+            android:onClick="onLogout" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_user"
+            style="?android:attr/buttonBarButtonStyle"
+            android:onClick="onSwithUser" />
+    </LinearLayout>
+    <ProgressBar android:id="@+id/login_progress"
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"    
+      android:visibility="gone"
+      android:layout_gravity="center" />
+    <EditText
+        android:id="@+id/login_dummy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="" />
+</LinearLayout>

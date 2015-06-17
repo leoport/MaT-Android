@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+    <EditText
+        android:id="@+id/compose_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="8dp"
+        android:inputType="textMultiLine|textVisiblePassword"
+        android:hint="@string/compose_to"
+        android:textSize="20sp" />
+    <ScrollView
+        android:id="@+id/compose_scholler"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:fillViewport="true">
+        <EditText
+            android:id="@+id/compose_content"
+            android:singleLine="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:textSize="20sp"
+            android:hint="@string/compose_content" />
+    </ScrollView>
+    <Button
+        android:id="@+id/compose_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/OK"
+        android:onClick="onSubmit"/>
+    <ProgressBar android:id="@+id/compose_progress"
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"    
+      android:layout_gravity="center" />
+    <EditText
+        android:id="@+id/compose_dummy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="" />
+</LinearLayout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+   <item
+        android:id="@+id/action_sync"
+        android:showAsAction="never"
+        android:title="@string/update_now"/> 
+   <item
+        android:id="@+id/action_inbox"
+        android:showAsAction="never"
+        android:title="@string/action_inbox"/> 
+   <item
+        android:id="@+id/action_sent"
+        android:showAsAction="never"
+        android:title="@string/action_sent"/> 
+   <item
+        android:id="@+id/action_settings"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/> 
+   <item
+        android:id="@+id/action_compose"
+        android:showAsAction="never"
+        android:title="@string/action_compose"/> 
+   <item
+        android:id="@+id/action_logout"
+        android:showAsAction="never"
+        android:title="@string/logout"/> 
+   <item
+        android:id="@+id/action_change_password"
+        android:showAsAction="never"
+        android:title="@string/change_password"/> 
+   <item
+        android:id="@+id/action_personal_info"
+        android:showAsAction="never"
+        android:title="@string/personal_info"/> 
+</menu>
