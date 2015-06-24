@@ -21,46 +21,81 @@ import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
-import org.leopub.mat.service.ConfirmMessageService;
-import org.leopub.mat.service.UpdateMessageService;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TabHost;
+import android.widget.TextView;
 
 
 public class MainActivity extends SmartActivity {
     private UserManager mUserManager;
     private User mUser;
 
-    private String mLastUpdateTime;
+    private String mLastSyncTime;
     private User mPausedUser;
 
-    private Fragment mFragment;
+    private Fragment mFragments[];
+    private TabHost mTabHost;
+    private int mTabTagIds[] = {R.string.action_inbox, R.string.action_sent, R.string.action_user};
+    private String mTabTags[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mUserManager = UserManager.getInstance();
-        mLastUpdateTime = "?";
+        mLastSyncTime = "?";
         initBroadcoastReceiver();
 
-        mFragment = new InboxFragment();
-        getActionBar().setTitle(R.string.action_inbox);
+        getActionBar().hide();
+        setContentView(R.layout.activity_main);
 
-        Intent updateIntent = new Intent(this, UpdateMessageService.class);
-        startService(updateIntent);
+        int nTab = mTabTagIds.length;
+        mFragments = new Fragment[nTab];
+        mFragments[0] = new InboxFragment();
+        mFragments[1] = new SentFragment();
+        mFragments[2] = new UserFragment();
+
+        mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup();
+
+        mTabTags = new String[nTab];
+        for (int i = 0; i < nTab; i++) {
+            mTabTags[i] = getString(mTabTagIds[i]);
+            setupTab(new TextView(this), mTabTags[i]);
+        }
+
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                //Toast.makeText(MainActivity.this, tabId, Toast.LENGTH_LONG).show();
+                int nTab = mTabTagIds.length;
+                for (int i = 0; i < nTab; i++) {
+                    if (tabId.equals(mTabTags[i])) {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(android.R.id.tabcontent, mFragments[i])
+                                .commit();
+                        break;
+                    }
+                }
+            }
+        });
+
+        //Intent updateIntent = new Intent(this, UpdateMessageService.class);
+        //startService(updateIntent);
     }
 
     @Override
@@ -72,6 +107,7 @@ public class MainActivity extends SmartActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        /*
         Fragment fragment = null;
         Intent intent = null;
         switch(item.getItemId()) {
@@ -97,13 +133,7 @@ public class MainActivity extends SmartActivity {
             break;
         }
         if (fragment != null) {
-            /*
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                           .replace(android.R.id.content, fragment)
-                           .commit();
-            return true;
-            */
+
             mFragment = fragment;
             updateView();
             return true;
@@ -117,7 +147,7 @@ public class MainActivity extends SmartActivity {
             intent = new Intent(this, UpdateMessageService.class);
             startService(intent);
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -130,10 +160,10 @@ public class MainActivity extends SmartActivity {
 
     @Override
     public void onResume() {
-        mUser = mUserManager.getCurrentUser();
+        //mUser = mUserManager.getCurrentUser();
         super.onResume();
 
-        checkUpdate();
+        //checkUpdate();
         mUserManager.setMainActivityRunning(true);
     }
 
@@ -156,22 +186,23 @@ public class MainActivity extends SmartActivity {
         User currentUser = mUserManager.getCurrentUser();
         if (currentUser == null) return;
 
-        if (mPausedUser == null || currentUser == null || currentUser != mPausedUser || !mUser.getBriefLastUpdateTime().equals(mLastUpdateTime)) {
-            mLastUpdateTime = mUser.getBriefLastUpdateTime();
+        if (mPausedUser == null || currentUser == null || currentUser != mPausedUser || !mUser.getBriefLastUpdateTime().equals(mLastSyncTime)) {
+            //mLastUpdateTime = mUser.getBriefLastUpdateTime();
 
-            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            nm.cancel(0);
+            //NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            //nm.cancel(0);
 
             //int nUnconfirmedInboxItem = mUserDataManager.getUnconfirmedInboxItems().size();
-            updateView();
+            //updateView();
         }
     }
 
     protected void updateView() {
+        /*
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                       .replace(android.R.id.content, mFragment)
-                       .commit();
+                       .replace(android.R.id.tabcontent, mFragments[0])
+                       .commit();*/
     }
 
     private void initBroadcoastReceiver() {
@@ -179,13 +210,29 @@ public class MainActivity extends SmartActivity {
         filter.addAction(Configure.BROADCAST_CONFIRM_MSG_ACTION);
         filter.addAction(Configure.BROADCAST_SEND_MSG_ACTION);
         UpdateStateReceiver receiver = new UpdateStateReceiver();
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(receiver , filter);
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(receiver, filter);
+    }
+
+    private void setupTab(final View view, final String tag) {
+        View tabView = createTabView(this, tag);
+        TabHost.TabSpec setContent = mTabHost.newTabSpec(tag).setIndicator(tabView).setContent(new TabHost.TabContentFactory() {
+            public View createTabContent(String tag) { return view; }
+        });
+        mTabHost.addTab(setContent);
+    }
+
+    private static View createTabView(final Context context, final String text) {
+        View view = LayoutInflater.from(context).inflate(R.layout.tab_bg, null);
+        TextView tv = (TextView) view.findViewById(R.id.tabsText);
+        tv.setText(text);
+        return view;
     }
 
     private class UpdateStateReceiver extends BroadcastReceiver {
         private UpdateStateReceiver() {}
 
         public void onReceive(Context context, Intent intent) {
+            /*
             if (mUserManager.isMainActivityRunning()) {
                 checkUpdate();
                 String result = intent.getStringExtra(ConfirmMessageService.RESULT_STRING);
@@ -193,7 +240,7 @@ public class MainActivity extends SmartActivity {
                     result = getString(R.string.last_update_from) + mUser.getBriefLastUpdateTime();
                 }
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
-            }
+            } */
         }
     }
 }
