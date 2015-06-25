@@ -57,7 +57,7 @@ public class User {
 
     public User(Context context, String username) {
         mContext = context;
-        mConfigure = new Configure(context.getExternalFilesDir(null).toString(), username);
+        mConfigure = new Configure(context.getExternalFilesDir(null).getAbsolutePath(), username);
 
         mUsername = username;
         mSessionId = null;
@@ -99,8 +99,8 @@ public class User {
     }
 
     public void initStringMap() {
-        mMajorStringMap = new HashMap<String, String>();
-        mUnitTitleStringMap = new HashMap<Character, String>();
+        mMajorStringMap = new HashMap<>();
+        mUnitTitleStringMap = new HashMap<>();
         mMajorStringMap.put("cs", mContext.getString(R.string.short_name_of_cs));
         mUnitTitleStringMap.put('a', mContext.getString(R.string.title_for_a));
         mUnitTitleStringMap.put('b', mContext.getString(R.string.title_for_b));
@@ -144,26 +144,28 @@ public class User {
             data = HttpUtil.getUrl(this, Configure.MSG_FETCH_URL + "?since=" + since);
         }
         try {
+            boolean updated = false;
+
             JSONObject jsonObj = new JSONObject(data);
 
-            updateContact(jsonObj.getJSONArray("contact"));
+            updated = updateContact(jsonObj.getJSONArray("contact")) || updated;
 
-            updateInbox(jsonObj.getJSONArray("inbox"));
+            updated = updateInbox(jsonObj.getJSONArray("inbox")) || updated;
             mInboxItemsCache = null;
             mUnconfirmedInboxItemsCache = null;
 
-            updateConfirm(jsonObj.getJSONArray("confirm"));
+            updated = updateConfirm(jsonObj.getJSONArray("confirm")) || updated;
 
-            updateSent(jsonObj.getJSONArray("sent"));
+            updated = updateSent(jsonObj.getJSONArray("sent")) || updated;
             mSentItemsCache = null;
 
-            addUpdateRecord(jsonObj.getString("timestamp"), data.length());
+            addUpdateRecord(jsonObj.getString("timestamp"), data.length(), updated);
         } catch (JSONException e) {
             throw new NetworkDataException("Invalid JSON File", e);
         }
     }
     
-    public void updateContact(JSONArray arr) throws NetworkDataException {
+    public boolean updateContact(JSONArray arr) throws NetworkDataException {
         try {
             int n = arr.length();
             for (int i = 0; i < n; i++) {
@@ -184,12 +186,13 @@ public class User {
                 Logger.d("SQL", query);
                 mDatabase.execSQL(query);
             }
+            return n != 0;
         } catch (JSONException e) {
             throw new NetworkDataException("JSON/Contact:" + e.getMessage());
         }
     }
 
-   public void updateInbox(JSONArray arr) throws NetworkDataException {
+   public boolean updateInbox(JSONArray arr) throws NetworkDataException {
         try {
             int n = arr.length();
             for (int i = 0; i < n; i++) {
@@ -206,12 +209,13 @@ public class User {
                 Logger.d("SQL", query);
                 mDatabase.execSQL(query);
             }
+            return n != 0;
         } catch (JSONException e) {
             throw new NetworkDataException("JSON/Inbox:" + e.getMessage());
         }
     }
 
-    public void updateSent(JSONArray arr) throws NetworkDataException {
+    public boolean updateSent(JSONArray arr) throws NetworkDataException {
         try {
             int n = arr.length();
             for (int i = 0; i < n; i++) {
@@ -228,12 +232,13 @@ public class User {
                 Logger.d("SQL", query);
                 mDatabase.execSQL(query);
             }
+            return n != 0;
         } catch (JSONException e) {
             throw new NetworkDataException("JSON/Sent:" + e.getMessage());
         }
     }
 
-    public void updateConfirm(JSONArray arr) throws NetworkDataException {
+    public boolean updateConfirm(JSONArray arr) throws NetworkDataException {
         try {
             int n = arr.length();
             for (int i = 0; i < n; i++) {
@@ -249,13 +254,14 @@ public class User {
                 Logger.d("SQL", query);
                 mDatabase.execSQL(query);
             }
+            return n != 0;
         } catch (JSONException e) {
             throw new NetworkDataException("JSON/Confirm:" + e.getMessage());
         }
     }
 
     @SuppressLint("DefaultLocale")
-    public void addUpdateRecord(String timestamp, int length) throws NetworkDataException {
+    public void addUpdateRecord(String timestamp, int length, boolean isDataUpdated) throws NetworkDataException {
         String query = String.format("INSERT INTO update_record VALUES(NULL, '%s', '%d');", timestamp, length);
         Logger.d("SQL", query);
         mDatabase.execSQL(query);
@@ -281,7 +287,7 @@ public class User {
     }
 
     public List<Contact> getContactsByInitChars(String initChars) {
-        List<Contact> res = new ArrayList<Contact>();
+        List<Contact> res = new ArrayList<>();
 //contact (`id` integer PRIMARY KEY, name varchar(255), name_char varchar(10), type char, unit varchar(10), title varchar(10), timestamp timestamp)
         String sql = "SELECT id, name, type, unit, title FROM contact WHERE name_char=? ORDER BY id;";
         String params[] = { initChars };
@@ -300,8 +306,9 @@ public class User {
     }
 
     public List<Contact> getUnderling() {
-        List<Contact> res = new ArrayList<Contact>();
+        List<Contact> res = new ArrayList<>();
         Contact me = getContact(mUsername);
+        if (me.getTitle().length() == 0) { return res; }
         String sql = "SELECT id, name, type, unit, title FROM contact WHERE `" +  me.getTitle() + "`='" + me.getId() + "'ORDER BY id;";
         Cursor cursor = mDatabase.rawQuery(sql, null);
         while (cursor.moveToNext()) {
@@ -337,7 +344,7 @@ public class User {
     public List<InboxItem> getInboxItems() {
         if (mInboxItemsCache != null) return mInboxItemsCache;
 
-        List<InboxItem> res = new ArrayList<InboxItem>();
+        List<InboxItem> res = new ArrayList<>();
 //inbox (`msg_id` integer PRIMARY KEY, `src_id` integer, `src_title` varchar(40), `content` varchar(2048), `status` integer, `timestamp` timestamp)
         String sql = "SELECT msg_id, src_id, src_title, content, status, timestamp FROM inbox " +
                      "ORDER BY status ASC, inbox.timestamp DESC;";
@@ -386,10 +393,10 @@ public class User {
     public List<InboxItem> getUnconfirmedInboxItems() {
         if (mUnconfirmedInboxItemsCache != null) return mUnconfirmedInboxItemsCache;
 
-        List<InboxItem> res = new ArrayList<InboxItem>();
+        List<InboxItem> res = new ArrayList<>();
 //inbox (`msg_id` integer PRIMARY KEY, `src_id` integer, `src_title` varchar(40), `content` varchar(2048), `status` integer, `timestamp` timestamp)
         String sql = "SELECT msg_id, src_id, src_title, content, status, timestamp FROM inbox WHERE status = 0 " +
-                     "ORDER BY timestamp DESC;";;
+                     "ORDER BY timestamp DESC;";
         Cursor cursor = mDatabase.rawQuery(sql, null);
         while (cursor.moveToNext()) {
             InboxItem item = new InboxItem();
@@ -409,7 +416,7 @@ public class User {
     public List<SentItem> getSentItems() {
         if (mSentItemsCache != null) return mSentItemsCache;
 
-        List<SentItem> res = new ArrayList<SentItem>();
+        List<SentItem> res = new ArrayList<>();
         String sql = "SELECT msg_id, dst_title, content, status, timestamp FROM sent ORDER BY timestamp DESC;";
         Cursor cursor = mDatabase.rawQuery(sql, null);
         while (cursor.moveToNext()) {
@@ -421,9 +428,6 @@ public class User {
             item.setTimestamp(cursor.getString(4));
             item.setProgress(getSentItemProgress(item.getMsgId()));
             res.add(item);
-            if (item.getStatus() == ItemStatus.Init) {
-                
-            }
         }
         cursor.close();
         mSentItemsCache = res;
@@ -457,7 +461,7 @@ public class User {
     }
 
     public List<ConfirmItem> getConfirmItems(int msgId) {
-        List<ConfirmItem> res = new ArrayList<ConfirmItem>();
+        List<ConfirmItem> res = new ArrayList<>();
         String sql = "SELECT confirm_id, dst_id, dst_title, status, timestamp FROM confirm "
                    + "WHERE msg_id=? ORDER BY timestamp ASC;";
         String[] params = { String.valueOf(msgId) };
@@ -538,11 +542,14 @@ public class User {
         }
         String grade = unit.substring(3, 4);
         if (!grade.equals("_")) {
-            sb.append("1" + grade + mContext.getString(R.string.unit_grade));
+            sb.append("1");
+            sb.append(grade);
+            sb.append(mContext.getString(R.string.unit_grade));
         }
         String className = unit.substring(5, 6);
         if (!className.equals("_")) {
-            sb.append(className + mContext.getString(R.string.unit_class));
+            sb.append(className);
+            sb.append(mContext.getString(R.string.unit_class));
         }
         if (title.length() == 0) {
             sb.append(mContext.getString(R.string.all_students));
@@ -570,8 +577,7 @@ public class User {
     }
 
     public String getCategoryJSON(String id) throws NetworkException, AuthException {
-        String response = HttpUtil.getUrl(this, Configure.INFO_CATEGORY_URL + "?id=" + id);
-        return response;
+        return HttpUtil.getUrl(this, Configure.INFO_CATEGORY_URL + "?id=" + id);
     }
 
     public void sendMessage(String dst, String content) throws AuthException, HintException, NetworkException, NetworkDataException {
@@ -580,7 +586,7 @@ public class User {
             sb.append("since=");
             sb.append(getLastUpdateTimeDigit());
             sb.append("&dst=");
-            sb.append(URLEncoder.encode(dst.toString(), "utf-8"));
+            sb.append(URLEncoder.encode(dst, "utf-8"));
             sb.append("&content=");
             sb.append(URLEncoder.encode(content, "utf-8"));
         } catch (UnsupportedEncodingException e) {

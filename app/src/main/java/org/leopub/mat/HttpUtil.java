@@ -116,11 +116,12 @@ public class HttpUtil {
             InputStream responseStream = conn.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[4096];
-            int length = 0;
+            int length;
             while ((length = responseStream.read(buffer)) != -1) {
                 baos.write(buffer, 0, length);
             }
             responseStream.close();
+            authByHeaders(user, conn.getHeaderFields());
             return new String(baos.toByteArray(), "UTF-8");
         } catch (IOException e) {
             throw new NetworkException(e.getMessage());
@@ -132,7 +133,7 @@ public class HttpUtil {
     }
 
     public static String postURL(User user, String url, String params) throws NetworkException, AuthException {
-        StringBuilder sb = new StringBuilder();;
+        StringBuilder sb = new StringBuilder();
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL(url).openConnection();
@@ -152,8 +153,10 @@ public class HttpUtil {
             writer.close();
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             while (reader.ready()) {
-                sb.append(reader.readLine() + "\n");
+                sb.append(reader.readLine());
+                sb.append("\n");
             }
+            reader.close();
             authByHeaders(user, conn.getHeaderFields());
         } catch (IOException e) {
             throw new NetworkException(e.getMessage());

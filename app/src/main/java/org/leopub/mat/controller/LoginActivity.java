@@ -119,7 +119,8 @@ public class LoginActivity extends Activity {
         builder.setItems(usernames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mUserManager.setCurrentUser(mUserManager.getUsers().get(which));
+                mUser = mUserManager.getUsers().get(which);
+                mUserManager.setCurrentUser(mUser);
                 fillAccount();
             }
         });
@@ -127,8 +128,8 @@ public class LoginActivity extends Activity {
     }
 
     private void showLoginProgress(boolean showProgress) {
-        ((EditText)findViewById(R.id.username)).setFocusableInTouchMode(!showProgress);
-        ((EditText)findViewById(R.id.password)).setFocusableInTouchMode(!showProgress);
+        findViewById(R.id.username).setFocusableInTouchMode(!showProgress);
+        findViewById(R.id.password).setFocusableInTouchMode(!showProgress);
         if (showProgress) {
             findViewById(R.id.login_progress).setVisibility(View.VISIBLE);
             findViewById(R.id.login_buttons).setVisibility(View.GONE);
@@ -152,8 +153,8 @@ public class LoginActivity extends Activity {
             String result = null;
             try {
                 User mUser = new User(MyApplication.getAppContext(), username);
-                mUserManager.setCurrentUser(mUser);
                 HttpUtil.auth(mUser, password);
+                mUserManager.setCurrentUser(mUser);
                 Intent intent = new Intent(LoginActivity.this, UpdateMessageService.class);
                 startService(intent);
             } catch (NetworkException e) {

@@ -42,7 +42,7 @@ public class UserManager {
 
     private UserManager(Context context) {
         mContext = context;
-        mAppHomePath = context.getExternalFilesDir(null).toString();
+        mAppHomePath = context.getExternalFilesDir(null).getAbsolutePath();
 
         mIsMainActivityRunning = false;
 
@@ -63,6 +63,16 @@ public class UserManager {
         if (cursor.moveToNext()) {
             mCurrentUser = new User(context, cursor.getString(0));
             mCurrentUser.setCookieId(cursor.getString(1));
+        }
+    }
+
+    @Override
+    protected void finalize() {
+        mLoginDatabase.close();
+        try {
+            super.finalize();
+        } catch (Throwable throwable) {
+            Logger.e("UserManager:finalize:", throwable.getMessage());
         }
     }
 
@@ -89,14 +99,15 @@ public class UserManager {
     }
 
     public List<User> getUsers() {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
         String columns[] = { "username, cookie_id" };
         Cursor cursor = mLoginDatabase.query(
                 "login", columns, null, null, null, null, "last_login DESC", null);
 
         while (cursor.moveToNext()) {
             User user = new User(mContext, cursor.getString(0));
-            user.setCookieId(cursor.getString(1));
+            //user.setCookieId(cursor.getString(1));
+            user.setCookieId(null);
             users.add(user);
         }
         return users;
@@ -109,7 +120,5 @@ public class UserManager {
     public void setMainActivityRunning(boolean isMainActivityRunning) {
         mIsMainActivityRunning = isMainActivityRunning;
     }
-    protected void finalize() {
-        mLoginDatabase.close();
-    }
+
 }
