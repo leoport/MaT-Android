@@ -55,14 +55,13 @@ public class SentItemActivity extends Activity {
 
         String lineSeperator = System.getProperty("line.separator");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(getString(R.string.sent_item_to) + ":" + mItem.getDstTitle());
-        sb.append(lineSeperator);
-        sb.append(getString(R.string.sent_item_time) + ":" + mItem.getTimestamp());
-        sb.append(lineSeperator);
-        sb.append(getString(R.string.sent_item_content) + ":" + mItem.getContent());
+        String content = getString(R.string.sent_item_to) + ":" + mItem.getDstTitle();
+        content += lineSeperator;
+        content += getString(R.string.sent_item_time) + ":" + mItem.getTimestamp();
+        content += lineSeperator;
+        content += getString(R.string.sent_item_content) + ":" + mItem.getContent();
         TextView textView = (TextView) findViewById(R.id.sent_item_content);
-        textView.setText(sb.toString());
+        textView.setText(content);
     }
 
     @Override

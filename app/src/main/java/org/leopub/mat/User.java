@@ -558,7 +558,7 @@ public class User {
         }
         int nTitle = title.length();
         for (int i = 1; i < nTitle; i++) {
-            sb.append("¡¢");
+            sb.append(",");
             sb.append(mUnitTitleStringMap.get(title.charAt(i)));
         }
         return sb.toString();
