@@ -16,6 +16,7 @@
 
 package org.leopub.mat.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.leopub.mat.MyApplication;
@@ -23,29 +24,40 @@ import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.SentItem;
+import org.leopub.mat.service.UpdateMessageService;
 
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.Gravity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SentFragment extends ListFragment {
     private User mUser;
     private Context mContext;
-    private boolean mIsDataUpdated = false;
+    private SwipeRefreshLayout mSwipeView;
+    private boolean mIsDataOutdated = false;
+    List<SentItem> mSentItemList;
+    ArrayAdapter<SentItem> mArrayAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = MyApplication.getAppContext();
+        mUser = UserManager.getInstance().getCurrentUser();
+        mSentItemList = new ArrayList<>();
+        if (mUser != null) {
+            mSentItemList.addAll(mUser.getSentItems());
+        }
     }
 
     @Override
@@ -56,45 +68,74 @@ public class SentFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        updateView();
+        View rootView = getView();
+        mSwipeView = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe);
+        mSwipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeView.setRefreshing(true);
+                Intent intent = new Intent(getActivity(), UpdateMessageService.class);
+                getActivity().startService(intent);
+            }
+        });
+        mArrayAdapter = new SentArrayAdapter(mContext, R.layout.list_item, R.id.item_content, mSentItemList);
+        ListView listView = getListView();
+        listView.setAdapter(mArrayAdapter);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) { }
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                mSwipeView.setEnabled(firstVisibleItem == 0);
+            }
+        });
+        mIsDataOutdated = false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mIsDataUpdated) {
+        if (mIsDataOutdated) {
             updateView();
+        }
+        if (mUser != null) {
+            Toast.makeText(mContext, getString(R.string.last_update_from) + mUser.getBriefLastUpdateTime(), Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
+    public void onPause() {
+        mSwipeView.setRefreshing(false);
+        mSwipeView.destroyDrawingCache();
+        mSwipeView.clearAnimation();
+        super.onPause();
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        if (position == 0) return;
         Intent intent = new Intent(mContext, SentItemActivity.class);
-        intent.putExtra(SentItemActivity.SENT_ITEM_MSG_ID, mUser.getSentItems().get(position - 1).getMsgId());
+        intent.putExtra(SentItemActivity.SENT_ITEM_MSG_ID, mUser.getSentItems().get(position).getMsgId());
         startActivity(intent);
     }
 
     public void notifySyncEvent() {
+        mUser = UserManager.getInstance().getCurrentUser();
         if (isResumed()) {
             updateView();
+            mSwipeView.setRefreshing(false);
         } else {
-            mIsDataUpdated = true;
+            mIsDataOutdated = true;
         }
     }
 
     private void updateView() {
-        mUser = UserManager.getInstance().getCurrentUser();
-        if (mUser == null) return;
-
-        List<SentItem> sentItemList = mUser.getSentItems();
-        SentArrayAdapter arrayAdapter = new SentArrayAdapter(mContext, R.layout.list_item, R.id.item_content, sentItemList);
-        TextView textView = new TextView(mContext);
-        textView.setText(getString(R.string.last_update_from) + mUser.getBriefLastUpdateTime());
-        textView.setGravity(Gravity.CENTER);
-        getListView().addHeaderView(textView);
-        getListView().setAdapter(arrayAdapter);
-        mIsDataUpdated = false;
+        mSentItemList.clear();
+        if (mUser != null) {
+            mSentItemList.addAll(mUser.getSentItems());
+        }
+        mArrayAdapter.notifyDataSetChanged();
+        mIsDataOutdated = false;
     }
 
     private class SentArrayAdapter extends ArrayAdapter<SentItem> {

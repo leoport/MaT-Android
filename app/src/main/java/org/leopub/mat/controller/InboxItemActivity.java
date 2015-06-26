@@ -34,6 +34,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -155,14 +156,14 @@ public class InboxItemActivity extends Activity {
 
         String lineSeperator = System.getProperty("line.separator");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(getString(R.string.inbox_item_from) + ": " + mItem.getSrcTitle());
-        sb.append(lineSeperator);
-        sb.append(getString(R.string.inbox_item_time) + ": " + mItem.getTimestamp());
-        sb.append(lineSeperator);
-        sb.append(getString(R.string.inbox_item_content) + ": " + mItem.getContent());
+        String content = new String();
+        content += getString(R.string.inbox_item_from) + ": " + mItem.getSrcTitle();
+        content += lineSeperator;
+        content += getString(R.string.inbox_item_time) + ": " + mItem.getTimestamp();
+        content += lineSeperator;
+        content += getString(R.string.inbox_item_content) + ": " + mItem.getContent();
         TextView textView = (TextView) findViewById(R.id.inbox_item_content);
-        textView.setText(sb.toString());
+        textView.setText(content);
         mBroadcastReceiver = new ConfirmMsgReceiver();
     }
 
