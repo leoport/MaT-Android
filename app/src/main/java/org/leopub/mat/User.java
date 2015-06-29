@@ -294,9 +294,9 @@ public class User {
         Cursor cursor = mDatabase.rawQuery(sql, params);
         while (cursor.moveToNext()) {
             Contact contact = new Contact();
-            contact.setId(cursor.getString(0));
+            contact.setId(cursor.getInt(0));
             contact.setName(cursor.getString(1));
-            contact.setType(cursor.getString(2));
+            contact.setType(Contact.Type.valueOf(cursor.getString(2)));
             contact.setUnit(cursor.getString(3));
             contact.setTitle(cursor.getString(4));
             res.add(contact);
@@ -313,9 +313,9 @@ public class User {
         Cursor cursor = mDatabase.rawQuery(sql, null);
         while (cursor.moveToNext()) {
             Contact contact = new Contact();
-            contact.setId(cursor.getString(0));
+            contact.setId(cursor.getInt(0));
             contact.setName(cursor.getString(1));
-            contact.setType(cursor.getString(2));
+            contact.setType(Contact.Type.valueOf(cursor.getString(2)));
             contact.setUnit(cursor.getString(3));
             contact.setTitle(cursor.getString(4));
             res.add(contact);
@@ -331,9 +331,9 @@ public class User {
         Contact contact = null;
         if (cursor.moveToNext()) {
             contact = new Contact();
-            contact.setId(cursor.getString(0));
+            contact.setId(cursor.getInt(0));
             contact.setName(cursor.getString(1));
-            contact.setType(cursor.getString(2));
+            contact.setType(Contact.Type.valueOf(cursor.getString(2)));
             contact.setUnit(cursor.getString(3));
             contact.setTitle(cursor.getString(4));
         }
@@ -356,7 +356,7 @@ public class User {
             item.setSrcTitle(cursor.getString(2));
             item.setContent(cursor.getString(3));
             item.setStatus(ItemStatus.fromOrdial(cursor.getInt(4)));
-            item.setTimestamp(cursor.getString(5));
+            item.setTimestamp(new DateTime(cursor.getString(5)));
             res.add(item);
         }
         cursor.close();
@@ -384,7 +384,7 @@ public class User {
             item.setSrcTitle(cursor.getString(2));
             item.setContent(cursor.getString(3));
             item.setStatus(ItemStatus.fromOrdial(cursor.getInt(4)));
-            item.setTimestamp(cursor.getString(5));
+            item.setTimestamp(new DateTime(cursor.getString(5)));
         }
         cursor.close();
         return item;
@@ -405,7 +405,7 @@ public class User {
             item.setSrcTitle(cursor.getString(2));
             item.setContent(cursor.getString(3));
             item.setStatus(ItemStatus.fromOrdial(cursor.getInt(4)));
-            item.setTimestamp(cursor.getString(5));
+            item.setTimestamp(new DateTime(cursor.getString(5)));
             res.add(item);
         }
         cursor.close();
@@ -425,7 +425,7 @@ public class User {
             item.setDstTitle(cursor.getString(1));
             item.setContent(cursor.getString(2));
             item.setStatus(ItemStatus.fromOrdial(cursor.getInt(3)));
-            item.setTimestamp(cursor.getString(4));
+            item.setTimestamp(new DateTime(cursor.getString(4)));
             item.setProgress(getSentItemProgress(item.getMsgId()));
             res.add(item);
         }
@@ -453,7 +453,7 @@ public class User {
             item.setDstTitle(cursor.getString(1));
             item.setContent(cursor.getString(2));
             item.setStatus(ItemStatus.fromOrdial(cursor.getInt(3)));
-            item.setTimestamp(cursor.getString(4));
+            item.setTimestamp(new DateTime(cursor.getString(4)));
             item.setProgress(getSentItemProgress(item.getMsgId()));
         }
         cursor.close();
@@ -473,7 +473,7 @@ public class User {
             item.setDstId(cursor.getInt(1));
             item.setDstTitle(cursor.getString(2));
             item.setStatus(ItemStatus.fromOrdial(cursor.getInt(3)));
-            item.setTimestamp(cursor.getString(4));
+            item.setTimestamp(new DateTime(cursor.getString(4)));
             res.add(item);
         }
         cursor.close();
@@ -576,7 +576,7 @@ public class User {
         return sb.toString();
     }
 
-    public String getCategoryJSON(String id) throws NetworkException, AuthException {
+    public String getCategoryJSON(int id) throws NetworkException, AuthException {
         return HttpUtil.getUrl(this, Configure.INFO_CATEGORY_URL + "?id=" + id);
     }
 

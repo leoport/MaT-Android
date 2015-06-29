@@ -11,12 +11,6 @@
         style="?android:attr/buttonBarButtonStyle"
         android:text="@string/action_compose" />
     <Button
-        android:id="@+id/update_now"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="?android:attr/buttonBarButtonStyle"
-        android:text="@string/update_now" />
-    <Button
         android:id="@+id/change_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -118,43 +118,7 @@ public class InboxItemActivity extends Activity {
         intent.putExtra(ConfirmMessageService.SRC_ID, mItem.getSrcId());
         intent.putExtra(ConfirmMessageService.MSG_ID, mItem.getMsgId());
         startService(intent);
-        /*
-        mItem.setStatus(ItemStatus.Confirming);
-        NetworkTask networkTask = new NetworkTask();
-        networkTask.execute();
-        */
     }
-
-    /*
-    private class NetworkTask extends AsyncTask<String, Void, String> {
-        @SuppressLint("DefaultLocale")
-        @Override
-        protected String doInBackground(String... args) {
-            try {
-                String url = String.format(Configure.CONFIRM_URL, mItem.getSrcId(), mItem.getMsgId());
-                String result = HttpUtil.getUrl(url, mCurrentUser);
-                if (result.startsWith("OK")) {
-                    mItem.setStatus(ItemStatus.Confirmed);
-                    showToastHint(getString(R.string.send_message_OK));
-                }
-            } catch (NetworkException e) {
-                showToastHint(getString(R.string.error_network));
-            } catch (AuthException e) {
-                showToastHint(getString(R.string.error_auth_fail));
-            }
-            return "";
-        }
-
-        private void showToastHint(final String message) {
-            runOnUiThread(new Runnable() {
-               @Override
-               public void run() {
-                    Toast.makeText(InboxItemActivity.this, message, Toast.LENGTH_LONG).show();
-               }
-            });
-        }
-        
-    } */
     private void updateView() {
         invalidateOptionsMenu();
 
@@ -162,7 +126,7 @@ public class InboxItemActivity extends Activity {
 
         String content = getString(R.string.inbox_item_from) + ": " + mItem.getSrcTitle();
         content += lineSeperator;
-        content += getString(R.string.inbox_item_time) + ": " + mItem.getTimestamp();
+        content += getString(R.string.inbox_item_time) + ": " + mItem.getTimestamp().toSimpleString();
         content += lineSeperator;
         content += getString(R.string.inbox_item_content) + ": " + mItem.getContent();
         TextView textView = (TextView) findViewById(R.id.inbox_item_content);

@@ -17,13 +17,17 @@
 package org.leopub.mat.model;
 
 
+import org.leopub.mat.DateTime;
+
+import java.util.Date;
+
 public class InboxItem {
     private int mMsgId;
     private int mSrcId;
     private String mSrcTitle;
     private String mContent;
     private ItemStatus mStatus;
-    private String mTimestamp;
+    private DateTime mTimestamp;
 
     public int getMsgId() {
         return mMsgId;
@@ -65,11 +69,11 @@ public class InboxItem {
         mStatus = status;
     }
 
-    public String getTimestamp() {
+    public DateTime getTimestamp() {
         return mTimestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(DateTime timestamp) {
         mTimestamp = timestamp;
     }
 }

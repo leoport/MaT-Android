@@ -17,13 +17,15 @@
 package org.leopub.mat.model;
 
 
+import org.leopub.mat.DateTime;
+
 public class ConfirmItem {
     private int mId;
     private int mMsgId;
     private int mDstId;
     private String mDstTitle;
     private ItemStatus mStatus;
-    private String mTimestamp;
+    private DateTime mTimestamp;
 
     public int getId() {
         return mId;
@@ -65,11 +67,11 @@ public class ConfirmItem {
         mStatus = status;
     }
 
-    public String getTimestamp() {
+    public DateTime getTimestamp() {
         return mTimestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(DateTime timestamp) {
         mTimestamp = timestamp;
     }
 }

@@ -24,7 +24,7 @@ import java.util.Locale;
 
 public class DateTime {
     private static SimpleDateFormat sCompleteDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-    private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.US);
+    private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
     private static SimpleDateFormat sDigitDateFormat    = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 
     private GregorianCalendar mCalendar;
@@ -41,14 +41,14 @@ public class DateTime {
     }
 
     public String toCompleteString() {
-        return sCompleteDateFormat.format(mCalendar);
+        return sCompleteDateFormat.format(mCalendar.getTime());
     }
 
     public String toSimpleString() {
-        return sSimpleDateFormat.format(mCalendar);
+        return sSimpleDateFormat.format(mCalendar.getTime());
     }
 
     public String toDigitString() {
-        return sDigitDateFormat.format(mCalendar);
+        return sDigitDateFormat.format(mCalendar.getTime());
     }
 }

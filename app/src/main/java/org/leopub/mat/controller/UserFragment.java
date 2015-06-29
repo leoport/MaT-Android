@@ -50,7 +50,7 @@ public class UserFragment extends Fragment {
         User user = mUserManager.getCurrentUser();
         Contact me = user.getContact(mUserManager.getCurrentUser().getUsername());
         String title = me.getTitle();
-        boolean isLeader = me.getId().length() <= 5 || title.contains("b") || title.contains("t");
+        boolean isLeader = me.getType() == Contact.Type.T || title.contains("b") || title.contains("t");
 
         // handle compose
         Button button = (Button) getView().findViewById(R.id.compose_message);
@@ -74,16 +74,6 @@ public class UserFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
                 getActivity().startActivity(intent);
-            }
-        });
-
-        // handle update_now
-        button = (Button) getView().findViewById(R.id.update_now);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), UpdateMessageService.class);
-                getActivity().startService(intent);
             }
         });
 

@@ -147,8 +147,6 @@ public class PersonalInfoActivity extends ListActivity {
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //String str=parent.getItemAtPosition(position).toString();
-                //Toast.makeText(PersonalInfoActivity.this, "Äãµã»÷µÄÊÇ:"+str, 2000).show();
                 mChosenCategory = mInfoCategoryList.get(position);
                 GetPersonalInfoTask getTask = new GetPersonalInfoTask();
                 getTask.execute();
