@@ -19,7 +19,6 @@ package org.leopub.mat.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.leopub.mat.DateTime;
 import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
@@ -47,7 +46,6 @@ public class SentFragment extends ListFragment {
     private UserManager mUserManager;
     private User mUser;
     private SwipeRefreshLayout mSwipeView;
-    private DateTime mDateTimestamp;
     List<SentItem> mSentItemList;
     ArrayAdapter<SentItem> mArrayAdapter;
 
@@ -94,14 +92,9 @@ public class SentFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        User currentUser = mUserManager.getCurrentUser();
-        if (mUser != currentUser) {
-            mUser = currentUser;
-            updateView();
-        } else if (mUser != null){
-            if (mUser.getLastUpdateTime().compareTo(mDateTimestamp) != 0) {
-                updateView();
-            }
+        mUser = mUserManager.getCurrentUser();
+        updateView();
+        if (mUser != null){
             Toast.makeText(mContext, getString(R.string.last_update_from) + mUser.getLastSyncTime().toSimpleString(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -132,9 +125,6 @@ public class SentFragment extends ListFragment {
         mSentItemList.clear();
         if (mUser != null) {
             mSentItemList.addAll(mUser.getSentItems());
-            mDateTimestamp = mUser.getLastUpdateTime();
-        } else {
-            mDateTimestamp = new DateTime(0);
         }
         mArrayAdapter.notifyDataSetChanged();
     }
