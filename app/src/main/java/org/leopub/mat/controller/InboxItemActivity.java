@@ -27,6 +27,7 @@ import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.ItemStatus;
 import org.leopub.mat.service.ConfirmMessageService;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -53,13 +54,16 @@ public class InboxItemActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox_item);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         mUser = UserManager.getInstance().getCurrentUser();
 
         Intent intent = getIntent();
         int[] itemIdArray = intent.getIntArrayExtra(INBOX_ITEM_MSG_ID);
-        mItemIdStack = new Stack<Integer>();
+        mItemIdStack = new Stack<>();
         for (int itemId : itemIdArray) {
             mItemIdStack.push(itemId);
         }
@@ -156,8 +160,7 @@ public class InboxItemActivity extends Activity {
 
         String lineSeperator = System.getProperty("line.separator");
 
-        String content = new String();
-        content += getString(R.string.inbox_item_from) + ": " + mItem.getSrcTitle();
+        String content = getString(R.string.inbox_item_from) + ": " + mItem.getSrcTitle();
         content += lineSeperator;
         content += getString(R.string.inbox_item_time) + ": " + mItem.getTimestamp();
         content += lineSeperator;

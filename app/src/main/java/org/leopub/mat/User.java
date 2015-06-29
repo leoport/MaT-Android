@@ -260,7 +260,6 @@ public class User {
         }
     }
 
-    @SuppressLint("DefaultLocale")
     public void addUpdateRecord(String timestamp, int length, boolean isDataUpdated) throws NetworkDataException {
         String query = String.format("INSERT INTO update_record VALUES(NULL, '%s', '%d');", timestamp, length);
         Logger.d("SQL", query);
@@ -274,6 +273,7 @@ public class User {
         if (cursor.moveToNext()) {
             ret = cursor.getString(0);
         }
+        cursor.close();
         return ret;
     }
 
