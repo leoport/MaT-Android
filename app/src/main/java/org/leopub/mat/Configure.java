@@ -42,14 +42,23 @@ public class Configure {
     
     private String mUserHomePath;
 
-    public Configure(String appHomePath, String username) {
-        mUserHomePath = appHomePath + "/" + username;
+    public Configure(int id) {
+        File externalFileDir = MyApplication.getAppContext().getExternalFilesDir(null);
+        String appHomePath;
+        if (externalFileDir != null) {
+            appHomePath = externalFileDir.getAbsolutePath();
+        } else {
+            throw new RuntimeException("Android ExternalFilesDir is null");
+        }
+        mUserHomePath = appHomePath + "/" + id;
         
         String[] filenames = {getUserHomePath()};
         for (String filename : filenames) {
             File file = new File(filename);
             if (!file.exists()) {
-                file.mkdir();
+                if (!file.mkdir()) {
+                    throw new RuntimeException("Failed to create dir:" + file.getAbsolutePath());
+                }
             }
         }
     }

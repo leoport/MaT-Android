@@ -173,7 +173,7 @@ public class MainActivity extends Activity {
             if (mUserManager.isMainActivityRunning()) {
                 String result = intent.getStringExtra(ConfirmMessageService.RESULT_STRING);
                 if (result == null) { // Sync success
-                    result = getString(R.string.last_update_from) + mUser.getBriefLastUpdateTime();
+                    result = getString(R.string.last_update_from) + mUser.getLastSyncTime().toSimpleString();
                     notifySyncEvent();
                 }
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();

@@ -83,7 +83,7 @@ public class LoginActivity extends Activity {
     public void fillAccount() {
         if (mUser != null) {
             EditText usernameView = (EditText) findViewById(R.id.username);
-            usernameView.setText(mUser.getUsername());
+            usernameView.setText(mUser.getUserId());
 
             EditText passwordView = (EditText) findViewById(R.id.password);
             passwordView.setText("");
@@ -112,7 +112,7 @@ public class LoginActivity extends Activity {
         int nUser = users.size();
         String usernames[] = new String[nUser];
         for (int i = 0; i < nUser; i++) {
-            usernames[i] = users.get(i).getUsername();
+            usernames[i] = String.valueOf(users.get(i).getUserId());
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.switch_user));
@@ -152,7 +152,7 @@ public class LoginActivity extends Activity {
             String password = args[1];
             String result = null;
             try {
-                User mUser = new User(MyApplication.getAppContext(), username);
+                User mUser = new User(MyApplication.getAppContext(), Integer.valueOf(username));
                 HttpUtil.auth(mUser, password);
                 mUserManager.setCurrentUser(mUser);
                 Intent intent = new Intent(LoginActivity.this, UpdateMessageService.class);

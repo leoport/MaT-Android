@@ -48,7 +48,7 @@ public class UserFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         User user = mUserManager.getCurrentUser();
-        Contact me = user.getContact(mUserManager.getCurrentUser().getUsername());
+        Contact me = user.getContact(mUserManager.getCurrentUser().getUserId());
         String title = me.getTitle();
         boolean isLeader = me.getType() == Contact.Type.T || title.contains("b") || title.contains("t");
 

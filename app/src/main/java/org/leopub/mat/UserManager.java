@@ -61,7 +61,7 @@ public class UserManager {
         mCurrentUser = null;
 
         if (cursor.moveToNext()) {
-            mCurrentUser = new User(context, cursor.getString(0));
+            mCurrentUser = new User(context, cursor.getInt(0));
             mCurrentUser.setCookieId(cursor.getString(1));
         }
     }
@@ -84,7 +84,7 @@ public class UserManager {
         mCurrentUser = user;
         if (user != null) {
             String sql = String.format("INSERT OR REPLACE INTO login VALUES('%s', '%s', CURRENT_TIMESTAMP);",
-                    user.getUsername(), user.getCookieId());
+                    user.getUserId(), user.getCookieId());
             mLoginDatabase.execSQL(sql);
         }
     }
@@ -93,7 +93,7 @@ public class UserManager {
         if (mCurrentUser != null) {
             mCurrentUser.setCookieId(null);
             mCurrentUser.setSessionId(null);
-            String sql = String.format("UPDATE login SET cookie_id = NULL WHERE username = '%s';", mCurrentUser.getUsername());
+            String sql = String.format("UPDATE login SET cookie_id = NULL WHERE username = '%s';", mCurrentUser.getUserId());
             mLoginDatabase.execSQL(sql);
         }
     }
@@ -105,7 +105,7 @@ public class UserManager {
                 "login", columns, null, null, null, null, "last_login DESC", null);
 
         while (cursor.moveToNext()) {
-            User user = new User(mContext, cursor.getString(0));
+            User user = new User(mContext, cursor.getInt(0));
             //user.setCookieId(cursor.getString(1));
             user.setCookieId(null);
             users.add(user);

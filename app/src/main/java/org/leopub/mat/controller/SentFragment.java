@@ -100,7 +100,7 @@ public class SentFragment extends ListFragment {
             updateView();
         }
         if (mUser != null) {
-            Toast.makeText(mContext, getString(R.string.last_update_from) + mUser.getBriefLastUpdateTime(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getString(R.string.last_update_from) + mUser.getLastSyncTime().toSimpleString(), Toast.LENGTH_SHORT).show();
         }
     }
 

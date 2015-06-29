@@ -65,14 +65,14 @@ public class HttpUtil {
             sb.append("COOKIEID=");
             sb.append(user.getCookieId());
             sb.append("; USERNAME=");
-            sb.append(user.getUsername());
+            sb.append(user.getUserId());
         }
         return sb.toString();
     }
 
     public static void auth(User user, String password) throws NetworkException, AuthException {
         HttpURLConnection conn = null;
-        String params = "username=" + user.getUsername() + "&password=" + password;
+        String params = "username=" + user.getUserId() + "&password=" + password;
         try {
             conn = (HttpURLConnection) new URL(Configure.LOGIN_URL).openConnection();
             conn.setRequestMethod("POST");

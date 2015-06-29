@@ -94,11 +94,11 @@ public class PersonalInfoActivity extends ListActivity {
 
         mEditButtonListener = new EditButtonListener();
         mHelpButtonListener = new HelpButtonListener();
-        mPersonalInfoList = new ArrayList<PersonalInfoItem>();
+        mPersonalInfoList = new ArrayList<>();
         mPersonalInfoArrayAdapter = null;
 
         mUnderlingList = mUser.getUnderling();
-        mChosenPerson = mUser.getContact(mUserManager.getCurrentUser().getUsername());
+        mChosenPerson = mUser.getContact(mUserManager.getCurrentUser().getUserId());
         updateCategoryData();
         //updateView();
 
@@ -141,7 +141,7 @@ public class PersonalInfoActivity extends ListActivity {
         for (int i = 0; i < n; i++) {
             categories[i] = mInfoCategoryList.get(i).getName();
         }
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
         spinner.setAdapter(categoryAdapter);
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -229,7 +229,7 @@ public class PersonalInfoActivity extends ListActivity {
     } 
 
     private List<PersonalInfoItem> parseJSON(String s) throws NetworkDataException {
-        List<PersonalInfoItem> itemList = new ArrayList<PersonalInfoItem>();
+        List<PersonalInfoItem> itemList = new ArrayList<>();
         try {
             JSONObject root = new JSONObject(s);
             Iterator<String> iter = root.keys();
@@ -413,7 +413,7 @@ public class PersonalInfoActivity extends ListActivity {
 
             builder.show();
         }
-    };
+    }
 
     private class HelpButtonListener implements OnClickListener {
         @Override
@@ -438,7 +438,7 @@ public class PersonalInfoActivity extends ListActivity {
             builder.setView(textView);
             builder.show();
         }
-    };
+    }
     private class GetInfoCategoryTask extends AsyncTask<String, Void, String> {
         public GetInfoCategoryTask() {
             super();
@@ -474,7 +474,7 @@ public class PersonalInfoActivity extends ListActivity {
         }
 
         private List<InfoCategoryItem> parseJSON(String s) throws NetworkDataException {
-            List<InfoCategoryItem> itemList = new ArrayList<InfoCategoryItem>();
+            List<InfoCategoryItem> itemList = new ArrayList<>();
             try {
                 JSONArray array = new JSONArray(s);
                 int n = array.length();
