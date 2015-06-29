@@ -19,6 +19,7 @@ package org.leopub.mat.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.leopub.mat.DateTime;
 import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
@@ -42,10 +43,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SentFragment extends ListFragment {
-    private User mUser;
     private Context mContext;
+    private UserManager mUserManager;
+    private User mUser;
     private SwipeRefreshLayout mSwipeView;
-    private boolean mIsDataOutdated = false;
+    private DateTime mDateTimestamp;
     List<SentItem> mSentItemList;
     ArrayAdapter<SentItem> mArrayAdapter;
 
@@ -53,11 +55,8 @@ public class SentFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = MyApplication.getAppContext();
-        mUser = UserManager.getInstance().getCurrentUser();
+        mUserManager = UserManager.getInstance();
         mSentItemList = new ArrayList<>();
-        if (mUser != null) {
-            mSentItemList.addAll(mUser.getSentItems());
-        }
     }
 
     @Override
@@ -90,16 +89,19 @@ public class SentFragment extends ListFragment {
                 mSwipeView.setEnabled(firstVisibleItem == 0);
             }
         });
-        mIsDataOutdated = false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mIsDataOutdated) {
+        User currentUser = mUserManager.getCurrentUser();
+        if (mUser != currentUser) {
+            mUser = currentUser;
             updateView();
-        }
-        if (mUser != null) {
+        } else if (mUser != null){
+            if (mUser.getLastUpdateTime().compareTo(mDateTimestamp) != 0) {
+                updateView();
+            }
             Toast.makeText(mContext, getString(R.string.last_update_from) + mUser.getLastSyncTime().toSimpleString(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -120,12 +122,9 @@ public class SentFragment extends ListFragment {
     }
 
     public void notifySyncEvent() {
-        mUser = UserManager.getInstance().getCurrentUser();
         if (isResumed()) {
             updateView();
             mSwipeView.setRefreshing(false);
-        } else {
-            mIsDataOutdated = true;
         }
     }
 
@@ -133,9 +132,11 @@ public class SentFragment extends ListFragment {
         mSentItemList.clear();
         if (mUser != null) {
             mSentItemList.addAll(mUser.getSentItems());
+            mDateTimestamp = mUser.getLastUpdateTime();
+        } else {
+            mDateTimestamp = new DateTime(0);
         }
         mArrayAdapter.notifyDataSetChanged();
-        mIsDataOutdated = false;
     }
 
     private class SentArrayAdapter extends ArrayAdapter<SentItem> {

@@ -37,6 +37,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,12 +54,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         mUserManager = UserManager.getInstance();
         mUser = mUserManager.getCurrentUser();
         initBroadcoastReceiver();
 
-        getActionBar().hide();
         setContentView(R.layout.activity_main);
 
         int nTab = mTabTagIds.length;

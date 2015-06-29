@@ -16,18 +16,25 @@
 
 package org.leopub.mat;
 
+import android.support.annotation.NonNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public class DateTime {
+public class DateTime implements Comparable<DateTime> {
     private static SimpleDateFormat sCompleteDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
     private static SimpleDateFormat sDigitDateFormat    = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 
     private GregorianCalendar mCalendar;
+
+    public DateTime(long time) {
+        mCalendar = new GregorianCalendar();
+        mCalendar.setTime(new Date(time));
+    }
 
     public DateTime(String s) {
         Date date;
@@ -38,6 +45,11 @@ public class DateTime {
         }
         mCalendar = new GregorianCalendar();
         mCalendar.setTime(date);
+    }
+
+    @Override
+    public int compareTo(@NonNull DateTime other) {
+        return mCalendar.getTime().compareTo(other.mCalendar.getTime());
     }
 
     public String toCompleteString() {

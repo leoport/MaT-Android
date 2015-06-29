@@ -40,6 +40,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 public class User {
     private Context mContext;
@@ -102,19 +103,20 @@ public class User {
 
     private void initTimestamp() {
         String sql = "SELECT timestamp FROM sync_record WHERE updated=1 ORDER BY timestamp DESC LIMIT 1;";
-        String res = "1970-01-01 01:01:01";
         Cursor cursor = mDatabase.rawQuery(sql, null);
         if (cursor.moveToNext()) {
-            res = cursor.getString(0);
+            mLastUpdateTimestamp = new DateTime(cursor.getString(0));
+        } else {
+            mLastUpdateTimestamp = new DateTime(0);
         }
-        mLastUpdateTimestamp = new DateTime(res);
 
         sql = "SELECT timestamp FROM sync_record ORDER BY timestamp DESC LIMIT 1;";
         cursor = mDatabase.rawQuery(sql, null);
         if (cursor.moveToNext()) {
-            res = cursor.getString(0);
+            mLastSyncTimestamp = new DateTime(cursor.getString(0));
+        } else {
+            mLastSyncTimestamp = new DateTime(0);
         }
-        mLastSyncTimestamp = new DateTime(res);
         cursor.close();
     }
 

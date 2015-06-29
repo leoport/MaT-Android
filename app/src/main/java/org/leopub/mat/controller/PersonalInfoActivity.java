@@ -40,7 +40,6 @@ import org.leopub.mat.exception.NetworkException;
 import org.leopub.mat.model.Contact;
 import org.leopub.mat.model.PersonalInfoItem;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -87,7 +86,9 @@ public class PersonalInfoActivity extends ListActivity {
         setContentView(R.layout.activity_personal_info);
 
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         mUserManager = UserManager.getInstance();
         mUser = mUserManager.getCurrentUser();
@@ -193,12 +194,11 @@ public class PersonalInfoActivity extends ListActivity {
             super(context, resource, textViewId, items);
         }
 
-        @SuppressLint("InflateParams")
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.personal_info_item, null);
+                convertView = inflater.inflate(R.layout.personal_info_item, parent, false);
             }
             PersonalInfoItem item = getItem(position);
             TextView itemContentView = (TextView) convertView.findViewById(R.id.info_item_title) ;

@@ -19,6 +19,7 @@ package org.leopub.mat.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.leopub.mat.DateTime;
 import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
@@ -43,10 +44,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class InboxFragment extends ListFragment {
-    private User mUser;
     private Context mContext;
+    private UserManager mUserManager;
+    private User mUser;
     private SwipeRefreshLayout mSwipeView;
-    private boolean mIsDataOutdated = false;
+    private DateTime mDateTimestamp;
     List<InboxItem> mInboxItemList;
     ArrayAdapter<InboxItem> mArrayAdapter;
 
@@ -54,11 +56,8 @@ public class InboxFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = MyApplication.getAppContext();
-        mUser = UserManager.getInstance().getCurrentUser();
+        mUserManager = UserManager.getInstance();
         mInboxItemList = new ArrayList<>();
-        if (mUser != null) {
-            mInboxItemList.addAll(mUser.getInboxItems());
-        }
     }
 
     @Override
@@ -91,16 +90,19 @@ public class InboxFragment extends ListFragment {
                 mSwipeView.setEnabled(firstVisibleItem == 0);
             }
         });
-        mIsDataOutdated = false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mIsDataOutdated) {
+        User currentUser = mUserManager.getCurrentUser();
+        if (mUser != currentUser) {
+            mUser = currentUser;
             updateView();
-        }
-        if (mUser != null) {
+        } else if (mUser != null){
+            if (mUser.getLastUpdateTime().compareTo(mDateTimestamp) != 0) {
+                updateView();
+            }
             Toast.makeText(mContext, getString(R.string.last_update_from) + mUser.getLastSyncTime().toSimpleString(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -122,12 +124,9 @@ public class InboxFragment extends ListFragment {
     }
 
     public void notifySyncEvent() {
-        mUser = UserManager.getInstance().getCurrentUser();
         if (isResumed()) {
             updateView();
             mSwipeView.setRefreshing(false);
-        } else {
-            mIsDataOutdated = true;
         }
     }
 
@@ -135,9 +134,11 @@ public class InboxFragment extends ListFragment {
         mInboxItemList.clear();
         if (mUser != null) {
             mInboxItemList.addAll(mUser.getInboxItems());
+            mDateTimestamp = mUser.getLastUpdateTime();
+        } else {
+            mDateTimestamp = new DateTime(0);
         }
         mArrayAdapter.notifyDataSetChanged();
-        mIsDataOutdated = false;
     }
 
     private class InboxArrayAdapter extends ArrayAdapter<InboxItem> {
@@ -158,7 +159,6 @@ public class InboxFragment extends ListFragment {
             TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left); 
             leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
 
-            //if (item.getStatus() == ItemStatus.Init) {
             String rightHint = "";
             if (item.getStatus() == ItemStatus.Init) {
                 rightHint = getString(R.string.please_confirm);

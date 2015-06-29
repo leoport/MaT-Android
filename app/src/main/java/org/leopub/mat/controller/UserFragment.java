@@ -17,10 +17,7 @@
 package org.leopub.mat.controller;
 
 import org.leopub.mat.R;
-import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
-import org.leopub.mat.model.Contact;
-import org.leopub.mat.service.UpdateMessageService;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -47,25 +44,17 @@ public class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        User user = mUserManager.getCurrentUser();
-        Contact me = user.getContact(mUserManager.getCurrentUser().getUserId());
-        String title = me.getTitle();
-        boolean isLeader = me.getType() == Contact.Type.T || title.contains("b") || title.contains("t");
 
         // handle compose
         Button button = (Button) getView().findViewById(R.id.compose_message);
-        if (isLeader) {
-            button.setVisibility(View.VISIBLE);
-            button.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(), ComposeActivity.class);
-                    getActivity().startActivity(intent);
-                }
-            });
-        } else {
-            button.setVisibility(View.GONE);
-        }
+        button.setVisibility(View.VISIBLE);
+        button.setOnClickListener(new OnClickListener() {
+        @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ComposeActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
 
         // handle change password 
         button = (Button) getView().findViewById(R.id.change_password);
