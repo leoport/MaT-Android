@@ -25,7 +25,7 @@ import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.ItemStatus;
-import org.leopub.mat.service.UpdateMessageService;
+import org.leopub.mat.service.SyncMessageService;
 
 import android.app.ListFragment;
 import android.content.Context;
@@ -72,7 +72,7 @@ public class InboxFragment extends ListFragment {
             @Override
             public void onRefresh() {
                 mSwipeView.setRefreshing(true);
-                Intent intent = new Intent(getActivity(), UpdateMessageService.class);
+                Intent intent = new Intent(getActivity(), SyncMessageService.class);
                 getActivity().startService(intent);
             }
         });

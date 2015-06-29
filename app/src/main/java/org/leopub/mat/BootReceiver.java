@@ -16,7 +16,7 @@
 
 package org.leopub.mat;
 
-import org.leopub.mat.service.UpdateMessageService;
+import org.leopub.mat.service.SyncMessageService;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,7 +27,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent i) {
         Logger.i("Receiver", "Boot message received.");
         Context context = MyApplication.getAppContext();
-        Intent intent = new Intent(context, UpdateMessageService.class);
+        Intent intent = new Intent(context, SyncMessageService.class);
         context.startService(intent);
     }
 }

@@ -67,7 +67,7 @@
             android:label="@string/personal_info"
             android:screenOrientation="portrait">
         </activity>
-        <service android:name="org.leopub.mat.service.UpdateMessageService" />
+        <service android:name=".service.SyncMessageService" />
         <service android:name="org.leopub.mat.service.SendMessageService" />
         <service android:name="org.leopub.mat.service.ConfirmMessageService" />
     </application>

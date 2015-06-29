@@ -160,7 +160,7 @@ public class User {
         return mCookieId != null;
     }
 
-    public void sync(String data) throws NetworkException, NetworkDataException, AuthException {
+    public boolean sync(String data) throws NetworkException, NetworkDataException, AuthException {
         if (data == null) {
             String since = mLastSyncTimestamp.toDigitString();
             data = HttpUtil.getUrl(this, Configure.MSG_FETCH_URL + "?since=" + since);
@@ -187,6 +187,7 @@ public class User {
                 mLastUpdateTimestamp = mLastSyncTimestamp;
             }
             addUpdateRecord(jsonObj.getString("timestamp"), data.length(), updated);
+            return updated;
         } catch (JSONException e) {
             throw new NetworkDataException("Invalid JSON File", e);
         }

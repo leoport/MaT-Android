@@ -43,10 +43,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class UpdateMessageService extends IntentService {
-    private static final String TAG = "UpdateMessageService";
+public class SyncMessageService extends IntentService {
+    public static final String SYNC_RESULT_SUCCESS = "SYNC_RESULT_SUCCESS";
+    public static final String SYNC_RESULT_UPDATED = "SYNC_RESULT_UPDATED";
+    public static final String SYNC_RESULT_HINT    = "SYNC_RESULT_UPDATED";
+    private static final String TAG = "SyncMessageService";
 
-    public UpdateMessageService() {
+    public SyncMessageService() {
         super(TAG);
     }
 
@@ -54,43 +57,48 @@ public class UpdateMessageService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Logger.i(TAG, "onHandleIntent entered.");
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        UserManager userManager = UserManager.getInstance();
+        User user = userManager.getCurrentUser();
         boolean isAutoSync = pref.getBoolean("auto_sync", true);
         boolean isUpdateSuccess = false;
+        boolean updated = false;
+        String resultHint = null;
 
         try {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm.getActiveNetworkInfo() == null) throw new NetworkException("No connection available");
-
-            UserManager userManager = UserManager.getInstance();
-            User user = userManager.getCurrentUser();
+            if (cm.getActiveNetworkInfo() == null)
+                throw new NetworkException("No connection available");
             if (user == null) throw new AuthException("No user is loged in");
-
-            user.sync(null);
+            updated = user.sync(null);
             isUpdateSuccess = true;
-            Intent broadcastIntent = new Intent(Configure.BROADCAST_UPDATE_ACTION);
-            LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);
-            if (!userManager.isMainActivityRunning()) {
-                List<InboxItem> unconfirmedInboxItems = user.getUnconfirmedInboxItems();
-                if (unconfirmedInboxItems.size() > 0) {
-                    setNotification(unconfirmedInboxItems);
-                }
-            }
+            resultHint = getString(R.string.last_update_from) + user.getLastSyncTime().toSimpleString();
         } catch (NetworkException e) {
-            Logger.i(TAG, e.getMessage());
+            resultHint = getString(R.string.error_network);
         } catch (NetworkDataException e) {
-            Logger.i(TAG, e.getMessage());
+            resultHint = getString(R.string.error_network_data);
         } catch (AuthException e) {
-            Logger.i(TAG, "Auth failed");
-        } finally {
-            if (isAutoSync) {
-                int syncPeriod = 0;
-                if (isUpdateSuccess) {
-                    syncPeriod = Integer.parseInt(pref.getString("auto_sync_period", "240"));
-                } else {
-                    syncPeriod = Integer.parseInt(pref.getString("retry_sync_period", "10"));
-                }
-                setUpdate(syncPeriod, syncPeriod);
+            resultHint = getString(R.string.error_auth_fail);
+        }
+
+        Intent broadcastIntent = new Intent(Configure.BROADCAST_UPDATE_ACTION);
+        broadcastIntent.putExtra(SYNC_RESULT_SUCCESS, resultHint != null);
+        broadcastIntent.putExtra(SYNC_RESULT_UPDATED, updated);
+        broadcastIntent.putExtra(SYNC_RESULT_HINT, resultHint);
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);
+        if (!userManager.isMainActivityRunning() && user != null) {
+            List<InboxItem> unconfirmedInboxItems = user.getUnconfirmedInboxItems();
+            if (unconfirmedInboxItems.size() > 0) {
+                setNotification(unconfirmedInboxItems);
             }
+        }
+        if (isAutoSync) {
+            int syncPeriod = 0;
+            if (isUpdateSuccess) {
+                syncPeriod = Integer.parseInt(pref.getString("auto_sync_period", "240"));
+            } else {
+                syncPeriod = Integer.parseInt(pref.getString("retry_sync_period", "10"));
+            }
+            setUpdate(syncPeriod, syncPeriod);
         }
     }
 
@@ -124,7 +132,7 @@ public class UpdateMessageService extends IntentService {
     public static void setUpdate(int latency, int period) {
         Context context = MyApplication.getAppContext();
         Logger.i(TAG, "setUpdate latency:" + latency + ", period:" + period);
-        Intent i = new Intent(context, UpdateMessageService.class);
+        Intent i = new Intent(context, SyncMessageService.class);
         PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -138,7 +146,7 @@ public class UpdateMessageService extends IntentService {
     }
 
     public static void cancelUpdate(Context context) {
-        Intent i = new Intent(context, UpdateMessageService.class);
+        Intent i = new Intent(context, SyncMessageService.class);
         PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pi);
