@@ -182,7 +182,7 @@ public class LoginActivity extends Activity {
             showLoginProgress(false);
             MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
             String hint = intent.getStringExtra(MessageService.RESULT_HINT);
-            if (result == MessageService.Result.Updated) {
+            if (result == MessageService.Result.Updated || result == MessageService.Result.Synchronized) {
                 finish();
             } else {
                 Toast.makeText(LoginActivity.this, hint, Toast.LENGTH_LONG).show();
