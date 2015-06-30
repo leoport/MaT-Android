@@ -83,7 +83,7 @@ public class LoginActivity extends Activity {
     public void fillAccount() {
         if (mUser != null) {
             EditText usernameView = (EditText) findViewById(R.id.username);
-            usernameView.setText(mUser.getUserId());
+            usernameView.setText(String.valueOf(mUser.getUserId()));
 
             EditText passwordView = (EditText) findViewById(R.id.password);
             passwordView.setText("");

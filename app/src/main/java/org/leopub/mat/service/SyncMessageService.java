@@ -44,8 +44,13 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 public class SyncMessageService extends IntentService {
-    public static final String SYNC_RESULT_SUCCESS = "SYNC_RESULT_SUCCESS";
-    public static final String SYNC_RESULT_UPDATED = "SYNC_RESULT_UPDATED";
+    public static final int SYNC_UNKOWN_ERROR  = -1;
+    public static final int SYNC_OK      = 0;
+    public static final int SYNC_UPDATED = 1;
+    public static final int SYNC_NETWORK_ERROR = 2;
+    public static final int SYNC_NETWORK_DATA_ERROR = 3;
+    public static final int SYNC_AUTH_FAILED = 4;
+    public static final String SYNC_RESULT         = "SYNC_RESULT";
     public static final String SYNC_RESULT_HINT    = "SYNC_RESULT_UPDATED";
     private static final String TAG = "SyncMessageService";
 
@@ -62,7 +67,8 @@ public class SyncMessageService extends IntentService {
         boolean isAutoSync = pref.getBoolean("auto_sync", true);
         boolean isUpdateSuccess = false;
         boolean updated = false;
-        String resultHint = null;
+        String hint;
+        int result;
 
         try {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -71,19 +77,22 @@ public class SyncMessageService extends IntentService {
             if (user == null) throw new AuthException("No user is loged in");
             updated = user.sync(null);
             isUpdateSuccess = true;
-            resultHint = getString(R.string.last_update_from) + user.getLastSyncTime().toSimpleString();
+            result = updated ? SYNC_UPDATED : SYNC_OK;
+            hint = getString(R.string.last_update_from) + user.getLastSyncTime().toSimpleString();
         } catch (NetworkException e) {
-            resultHint = getString(R.string.error_network);
+            result = SYNC_NETWORK_ERROR;
+            hint = getString(R.string.error_network);
         } catch (NetworkDataException e) {
-            resultHint = getString(R.string.error_network_data);
+            result = SYNC_NETWORK_DATA_ERROR;
+            hint = getString(R.string.error_network_data);
         } catch (AuthException e) {
-            resultHint = getString(R.string.error_auth_fail);
+            result = SYNC_AUTH_FAILED;
+            hint = getString(R.string.error_auth_fail);
         }
 
         Intent broadcastIntent = new Intent(Configure.BROADCAST_UPDATE_ACTION);
-        broadcastIntent.putExtra(SYNC_RESULT_SUCCESS, resultHint != null);
-        broadcastIntent.putExtra(SYNC_RESULT_UPDATED, updated);
-        broadcastIntent.putExtra(SYNC_RESULT_HINT, resultHint);
+        broadcastIntent.putExtra(SYNC_RESULT, result);
+        broadcastIntent.putExtra(SYNC_RESULT_HINT, hint);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);
         if (!userManager.isMainActivityRunning() && user != null) {
             List<InboxItem> unconfirmedInboxItems = user.getUnconfirmedInboxItems();

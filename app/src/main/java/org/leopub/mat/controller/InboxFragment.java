@@ -81,7 +81,8 @@ public class InboxFragment extends ListFragment {
         listView.setAdapter(mArrayAdapter);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) { }
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+            }
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -116,9 +117,11 @@ public class InboxFragment extends ListFragment {
         startActivity(intent);
     }
 
-    public void notifySyncEvent() {
+    public void notifySyncEvent(boolean updated) {
         if (isResumed()) {
-            updateView();
+            if (updated) {
+                updateView();
+            }
             mSwipeView.setRefreshing(false);
         }
     }

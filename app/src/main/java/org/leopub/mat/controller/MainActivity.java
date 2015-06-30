@@ -136,12 +136,12 @@ public class MainActivity extends Activity {
         moveTaskToBack(true);
     }
 
-    protected void notifySyncEvent(boolean success, boolean updated) {
+    protected void notifySyncEvent(boolean updated) {
         InboxFragment inboxFragment = (InboxFragment)mFragments[0];
-        inboxFragment.notifySyncEvent();
+        inboxFragment.notifySyncEvent(updated);
 
         SentFragment sentFragment = (SentFragment)mFragments[1];
-        sentFragment.notifySyncEvent();
+        sentFragment.notifySyncEvent(updated);
     }
 
     private void setupTab(final View view, final String tag) {
@@ -172,11 +172,16 @@ public class MainActivity extends Activity {
 
         public void onReceive(Context context, Intent intent) {
             if (mUserManager.isMainActivityRunning()) {
-                boolean success = intent.getBooleanExtra(SyncMessageService.SYNC_RESULT_SUCCESS, false);
-                boolean updated = intent.getBooleanExtra(SyncMessageService.SYNC_RESULT_UPDATED, false);
+                int result = intent.getIntExtra(SyncMessageService.SYNC_RESULT, SyncMessageService.SYNC_UNKOWN_ERROR);
+                switch(result) {
+                    case SyncMessageService.SYNC_UPDATED:
+                        notifySyncEvent(true);
+                        break;
+                    default:
+                        notifySyncEvent(false);
+                }
                 String hint =  intent.getStringExtra(SyncMessageService.SYNC_RESULT_HINT);
                 Toast.makeText(MainActivity.this, hint, Toast.LENGTH_LONG).show();
-                notifySyncEvent(success, updated);
             }
         }
     }
