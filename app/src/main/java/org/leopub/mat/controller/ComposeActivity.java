@@ -55,7 +55,6 @@ public class ComposeActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_compose);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -73,7 +72,6 @@ public class ComposeActivity extends Activity {
                 if (str.endsWith(" ")) {
                     String[] tokens = str.split(";");
                     String lastToken = tokens[tokens.length - 1].trim();
-                    //Toast.makeText(ComposeActivity.this, lastToken, Toast.LENGTH_LONG).show();
                     onChooseContact(lastToken);
                 }
             }
@@ -138,11 +136,6 @@ public class ComposeActivity extends Activity {
         sendMsgIntent.putExtra(SendMessageService.CONTENT, contentStr);
         startService(sendMsgIntent);
         showSendProgress(true);
-        /*
-        PostMessageTask postTask = new PostMessageTask(to.toString(), contentStr);
-        postTask.execute();
-        showSendProgress(true);
-        */
     }
 
     private void showSendProgress(boolean showProgress) {
@@ -205,66 +198,6 @@ public class ComposeActivity extends Activity {
         toView.setText(mReceivers);
         toView.setSelection(mReceivers.length());
     }
-
-    /*
-    private class PostMessageTask extends AsyncTask<String, Void, String> {
-        private String mDst;
-        private String mContent;
-        public PostMessageTask(String dst, String content) {
-            super();
-            mDst = dst;
-            mContent = content;
-        }
-
-        @Override
-        protected String doInBackground(String... args) {
-            try {
-                mDataManager.postNewMessage(mDst, mContent);
-                Button button = (Button)findViewById(R.id.compose_send);
-                button.setText(getString(R.string.send_message_OK));
-                button.setClickable(false);
-                showToastHint(getString(R.string.send_message_OK));
-                
-                //runOnUiThread(new Runnable() {
-                //    @Override
-                //    public void run() {
-                //        onBackPressed();
-                //    }
-                //});
-            } catch (NetworkException e) {
-                showToastHint(getString(R.string.error_network));
-            } catch (NetworkDataException e) {
-                showToastHint(getString(R.string.error_network));
-            } catch (AuthException e) {
-                showToastHint(getString(R.string.error_auth_fail));
-            } catch (HintException e) {
-                showToastHint(e.getMessage());
-            } finally {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showSendProgress(false);
-                    }
-                });
-            }
-            return "";
-        }
-
-        private void showToastHint(final String message) {
-            runOnUiThread(new Runnable() {
-               @Override
-               public void run() {
-                    Toast.makeText(ComposeActivity.this, message, Toast.LENGTH_LONG).show();
-               }
-            });
-        }
-    } */
-    /*
-    private void initBroadcoastReceiver() {
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_SEND_MSG_ACTION);
-        SendMsgReceiver receiver = new SendMsgReceiver();
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(receiver , filter);
-    } */
 
     private class SendMsgReceiver extends BroadcastReceiver {
         private SendMsgReceiver() {}

@@ -72,7 +72,7 @@ public class ConfirmMessageService extends IntentService {
             Logger.i(TAG, "Auth failed");
         } catch (HintException e) {
             result = e.getMessage();
-            Logger.i(TAG, "Auth failed");
+            Logger.i(TAG, result);
         }
 
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(MyApplication.getAppContext());
