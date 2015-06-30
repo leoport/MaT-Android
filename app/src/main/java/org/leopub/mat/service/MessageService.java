@@ -129,7 +129,7 @@ public class MessageService extends IntentService {
             hint = e.getMessage();
         }
 
-        Intent broadcastIntent = new Intent(Configure.BROADCAST_UPDATE_ACTION);
+        Intent broadcastIntent = new Intent(Configure.BROADCAST_MESSAGE);
         broadcastIntent.putExtra(RESULT_CODE, result);
         broadcastIntent.putExtra(RESULT_HINT, hint);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);

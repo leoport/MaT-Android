@@ -68,7 +68,5 @@
             android:screenOrientation="portrait">
         </activity>
         <service android:name=".service.MessageService" />
-        <service android:name="org.leopub.mat.service.SendMessageService" />
-        <service android:name="org.leopub.mat.service.ConfirmMessageService" />
     </application>
 </manifest>

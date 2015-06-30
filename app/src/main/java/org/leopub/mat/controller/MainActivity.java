@@ -159,9 +159,7 @@ public class MainActivity extends Activity {
     }
 
     private void initBroadcoastReceiver() {
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_UPDATE_ACTION);
-        filter.addAction(Configure.BROADCAST_CONFIRM_MSG_ACTION);
-        filter.addAction(Configure.BROADCAST_SEND_MSG_ACTION);
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
         UpdateStateReceiver receiver = new UpdateStateReceiver();
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(receiver, filter);
     }
@@ -171,15 +169,13 @@ public class MainActivity extends Activity {
 
         public void onReceive(Context context, Intent intent) {
             if (mUserManager.isMainActivityRunning()) {
-                int result = intent.getIntExtra(MessageService.SYNC_RESULT, MessageService.SYNC_UNKOWN_ERROR);
-                switch(result) {
-                    case MessageService.SYNC_UPDATED:
-                        notifySyncEvent(true);
-                        break;
-                    default:
-                        notifySyncEvent(false);
+                MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
+                if (result == MessageService.Result.Updated) {
+                    notifySyncEvent(true);
+                } else {
+                    notifySyncEvent(false);
                 }
-                String hint =  intent.getStringExtra(MessageService.SYNC_RESULT_HINT);
+                String hint =  intent.getStringExtra(MessageService.RESULT_HINT);
                 Toast.makeText(MainActivity.this, hint, Toast.LENGTH_LONG).show();
             }
         }

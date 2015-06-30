@@ -25,7 +25,7 @@ import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.ItemStatus;
-import org.leopub.mat.service.ConfirmMessageService;
+import org.leopub.mat.service.MessageService;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -35,7 +35,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,7 +45,7 @@ import android.widget.Toast;
 public class InboxItemActivity extends Activity {
     public final static String INBOX_ITEM_MSG_ID = "org.leopub.mat.inbox.choosenItemMsgId";
     private InboxItem mItem;
-    private ConfirmMsgReceiver mBroadcastReceiver;
+    private MessageBroadcastReceiver mBroadcastReceiver;
     private User mUser;
     private Stack<Integer> mItemIdStack = null;
 
@@ -69,6 +68,15 @@ public class InboxItemActivity extends Activity {
         }
         mItem = mUser.getInboxItemByMsgId(mItemIdStack.pop());
         updateView();
+        mBroadcastReceiver = new MessageBroadcastReceiver();
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver , filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).unregisterReceiver(mBroadcastReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -103,20 +111,18 @@ public class InboxItemActivity extends Activity {
 
     @Override
     public void onResume() {
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_CONFIRM_MSG_ACTION);
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver , filter);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).unregisterReceiver(mBroadcastReceiver);
         super.onPause();
     }
     public void onRoger() {
-        Intent intent = new Intent(MyApplication.getAppContext(), ConfirmMessageService.class);
-        intent.putExtra(ConfirmMessageService.SRC_ID, mItem.getSrcId());
-        intent.putExtra(ConfirmMessageService.MSG_ID, mItem.getMsgId());
+        Intent intent = new Intent(MyApplication.getAppContext(), MessageService.class);
+        intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Confirm);
+        intent.putExtra(MessageService.CONFIRM_SRC_ID, mItem.getSrcId());
+        intent.putExtra(MessageService.CONFIRM_MSG_ID, mItem.getMsgId());
         startService(intent);
     }
     private void updateView() {
@@ -131,16 +137,16 @@ public class InboxItemActivity extends Activity {
         content += getString(R.string.inbox_item_content) + ": " + mItem.getContent();
         TextView textView = (TextView) findViewById(R.id.inbox_item_content);
         textView.setText(content);
-        mBroadcastReceiver = new ConfirmMsgReceiver();
     }
 
-    private class ConfirmMsgReceiver extends BroadcastReceiver {
-        private ConfirmMsgReceiver() {}
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        private MessageBroadcastReceiver() {}
 
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(ConfirmMessageService.RESULT_STRING);
-            Toast.makeText(MyApplication.getAppContext(), message, Toast.LENGTH_LONG).show();
-            if (getString(R.string.confirm_message_OK).equals(message)) {
+            MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
+            String hint = intent.getStringExtra(MessageService.RESULT_HINT);
+            Toast.makeText(MyApplication.getAppContext(), hint, Toast.LENGTH_LONG).show();
+            if (result == MessageService.Result.Confirmed) {
                 onBackPressed();
             }
         }

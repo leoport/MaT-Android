@@ -26,7 +26,7 @@ import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.Contact;
-import org.leopub.mat.service.SendMessageService;
+import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -102,7 +102,7 @@ public class ComposeActivity extends Activity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Configure.BROADCAST_SEND_MSG_ACTION);
         registerReceiver(mReceiver, filter); */
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_SEND_MSG_ACTION);
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mReceiver , filter);
         super.onResume();
     }
@@ -131,9 +131,10 @@ public class ComposeActivity extends Activity {
         EditText contentView = (EditText) findViewById(R.id.compose_content);
         String contentStr = contentView.getText().toString();
 
-        Intent sendMsgIntent = new Intent(MyApplication.getAppContext(), SendMessageService.class);
-        sendMsgIntent.putExtra(SendMessageService.DESTINATION, to.toString());
-        sendMsgIntent.putExtra(SendMessageService.CONTENT, contentStr);
+        Intent sendMsgIntent = new Intent(this, MessageService.class);
+        sendMsgIntent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Send);
+        sendMsgIntent.putExtra(MessageService.SEND_DESTINATION, to.toString());
+        sendMsgIntent.putExtra(MessageService.SEND_CONTENT, contentStr);
         startService(sendMsgIntent);
         showSendProgress(true);
     }
@@ -203,9 +204,10 @@ public class ComposeActivity extends Activity {
         private SendMsgReceiver() {}
 
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(SendMessageService.RESULT_STRING);
-            Toast.makeText(MyApplication.getAppContext(), message, Toast.LENGTH_LONG).show();
-            if (getString(R.string.send_message_OK).equals(message)) {
+            MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
+            String hint = intent.getStringExtra(MessageService.RESULT_HINT);
+            Toast.makeText(ComposeActivity.this, hint, Toast.LENGTH_LONG).show();
+            if (result == MessageService.Result.Sent) {
                 onBackPressed();
             } else {
                 showSendProgress(false);

@@ -72,6 +72,7 @@ public class SentFragment extends ListFragment {
             public void onRefresh() {
                 mSwipeView.setRefreshing(true);
                 Intent intent = new Intent(getActivity(), MessageService.class);
+                intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Sync);
                 getActivity().startService(intent);
             }
         });

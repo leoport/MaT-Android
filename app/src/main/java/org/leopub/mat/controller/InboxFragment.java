@@ -31,6 +31,7 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -73,6 +74,7 @@ public class InboxFragment extends ListFragment {
             public void onRefresh() {
                 mSwipeView.setRefreshing(true);
                 Intent intent = new Intent(getActivity(), MessageService.class);
+                intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Sync);
                 getActivity().startService(intent);
             }
         });

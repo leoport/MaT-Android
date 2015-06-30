@@ -19,9 +19,7 @@ package org.leopub.mat;
 import java.io.File;
 
 public class Configure {
-    public static final String BROADCAST_UPDATE_ACTION      = "org.leopub.mat.BROADCAST.UPDATE";
-    public static final String BROADCAST_CONFIRM_MSG_ACTION = "org.leopub.mat.BROADCAST.CONFIRM_MSG";
-    public static final String BROADCAST_SEND_MSG_ACTION    = "org.leopub.mat.BROADCAST.SEND_MSG";
+    public static final String BROADCAST_MESSAGE      = "org.leopub.mat.BROADCAST.MESSAGE";
 
     public static final String RE_CONTACTS      = "^((([abcfhltwxyz]*\\.(cs|__)[1_][234_][0_][1234_])|([1-9][0-9]*));)+$";
     public static final String RE_UNIT          = "^[abcfhltwxyz]*\\.(cs|__)[1_][234_][0_][1234_]$";

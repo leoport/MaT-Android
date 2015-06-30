@@ -26,7 +26,6 @@ import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.NetworkException;
-import org.leopub.mat.service.ConfirmMessageService;
 import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
@@ -47,7 +46,7 @@ import android.widget.Toast;
 public class LoginActivity extends Activity {
     private UserManager mUserManager;
     private User mUser;
-    private UpdateMessageReceiver mBroadcastReceiver;
+    private MessageBroadcastReceiver mBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +55,9 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         mUserManager = UserManager.getInstance();
         mUser = mUserManager.getCurrentUser();
-        mBroadcastReceiver = new UpdateMessageReceiver();
+        mBroadcastReceiver = new MessageBroadcastReceiver();
 
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_UPDATE_ACTION);
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver, filter);
 
     }
@@ -176,16 +175,17 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private class UpdateMessageReceiver extends BroadcastReceiver {
-        private UpdateMessageReceiver() {}
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        private MessageBroadcastReceiver() {}
 
         public void onReceive(Context context, Intent intent) {
             showLoginProgress(false);
-            String result = intent.getStringExtra(ConfirmMessageService.RESULT_STRING);
-            if (result == null) {
+            MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
+            String hint = intent.getStringExtra(MessageService.RESULT_HINT);
+            if (result == MessageService.Result.Updated) {
                 finish();
             } else {
-                Toast.makeText(MyApplication.getAppContext(), result, Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, hint, Toast.LENGTH_LONG).show();
             }
         }
     }
