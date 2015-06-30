@@ -31,7 +31,6 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -61,7 +60,7 @@ public class InboxFragment extends ListFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstaceState) {
-        return inflater.inflate(R.layout.fragment_list, parent, false);
+        return inflater.inflate(R.layout.fragment_inbox, parent, false);
     }
 
     @Override

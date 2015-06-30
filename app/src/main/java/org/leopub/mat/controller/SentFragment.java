@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,7 +60,7 @@ public class SentFragment extends ListFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstaceState) {
-        return inflater.inflate(R.layout.fragment_list, parent, false);
+        return inflater.inflate(R.layout.fragment_sent, parent, false);
     }
 
     @Override
@@ -87,6 +88,16 @@ public class SentFragment extends ListFragment {
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 mSwipeView.setEnabled(firstVisibleItem == 0);
+            }
+        });
+
+        // handle compose
+        Button button = (Button) getView().findViewById(R.id.compose_message);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ComposeActivity.class);
+                getActivity().startActivity(intent);
             }
         });
     }

@@ -7,7 +7,7 @@
     <string name="action_settings">设置</string>
     <string name="action_user">用户</string>
     <string name="action_refresh">刷新</string>
-    <string name="action_compose">发送消息</string>
+    <string name="action_compose">撰写新消息</string>
     <string name="action_inbox">收件箱</string>
     <string name="action_sent">发件箱</string>
     <string name="action_confirm_detail">确认记录</string>

@@ -45,24 +45,14 @@ public class UserFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // handle compose
-        Button button = (Button) getView().findViewById(R.id.compose_message);
-        button.setVisibility(View.VISIBLE);
-        button.setOnClickListener(new OnClickListener() {
-        @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ComposeActivity.class);
-                getActivity().startActivity(intent);
-            }
-        });
 
-        // handle change password 
-        button = (Button) getView().findViewById(R.id.change_password);
+        // handle personal_info
+        Button button = (Button) getView().findViewById(R.id.personal_info);
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
-                getActivity().startActivity(intent);
+                Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -76,13 +66,13 @@ public class UserFragment extends Fragment {
             }
         });
 
-        // handle personal_info
-        button = (Button) getView().findViewById(R.id.personal_info);
+        // handle change password
+        button = (Button) getView().findViewById(R.id.change_password);
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+                getActivity().startActivity(intent);
             }
         });
 
