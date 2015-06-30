@@ -17,7 +17,7 @@
 package org.leopub.mat.controller;
 
 import org.leopub.mat.R;
-import org.leopub.mat.service.SyncMessageService;
+import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -43,9 +43,9 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
         boolean isAutoSync = preferences.getBoolean("auto_sync", true);
         if (isAutoSync) {
             int syncPeriod = Integer.parseInt(preferences.getString("auto_sync_period", "240"));
-            SyncMessageService.setUpdate(syncPeriod, syncPeriod);
+            MessageService.setUpdate(syncPeriod, syncPeriod);
         } else {
-            SyncMessageService.cancelUpdate(this);
+            MessageService.cancelUpdate(this);
         }
     }
 

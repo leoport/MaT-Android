@@ -21,8 +21,7 @@ import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
-import org.leopub.mat.service.ConfirmMessageService;
-import org.leopub.mat.service.SyncMessageService;
+import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -97,7 +96,7 @@ public class MainActivity extends Activity {
                 .replace(android.R.id.tabcontent, mFragments[0])
                 .commit();
 
-        Intent updateIntent = new Intent(this, SyncMessageService.class);
+        Intent updateIntent = new Intent(this, MessageService.class);
         startService(updateIntent);
     }
 
@@ -172,15 +171,15 @@ public class MainActivity extends Activity {
 
         public void onReceive(Context context, Intent intent) {
             if (mUserManager.isMainActivityRunning()) {
-                int result = intent.getIntExtra(SyncMessageService.SYNC_RESULT, SyncMessageService.SYNC_UNKOWN_ERROR);
+                int result = intent.getIntExtra(MessageService.SYNC_RESULT, MessageService.SYNC_UNKOWN_ERROR);
                 switch(result) {
-                    case SyncMessageService.SYNC_UPDATED:
+                    case MessageService.SYNC_UPDATED:
                         notifySyncEvent(true);
                         break;
                     default:
                         notifySyncEvent(false);
                 }
-                String hint =  intent.getStringExtra(SyncMessageService.SYNC_RESULT_HINT);
+                String hint =  intent.getStringExtra(MessageService.SYNC_RESULT_HINT);
                 Toast.makeText(MainActivity.this, hint, Toast.LENGTH_LONG).show();
             }
         }

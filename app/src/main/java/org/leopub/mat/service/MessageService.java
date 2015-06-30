@@ -26,6 +26,7 @@ import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.controller.InboxItemActivity;
 import org.leopub.mat.exception.AuthException;
+import org.leopub.mat.exception.HintException;
 import org.leopub.mat.exception.NetworkDataException;
 import org.leopub.mat.exception.NetworkException;
 import org.leopub.mat.model.InboxItem;
@@ -43,18 +44,34 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class SyncMessageService extends IntentService {
-    public static final int SYNC_UNKOWN_ERROR  = -1;
-    public static final int SYNC_OK      = 0;
-    public static final int SYNC_UPDATED = 1;
-    public static final int SYNC_NETWORK_ERROR = 2;
-    public static final int SYNC_NETWORK_DATA_ERROR = 3;
-    public static final int SYNC_AUTH_FAILED = 4;
-    public static final String SYNC_RESULT         = "SYNC_RESULT";
-    public static final String SYNC_RESULT_HINT    = "SYNC_RESULT_UPDATED";
-    private static final String TAG = "SyncMessageService";
+public class MessageService extends IntentService {
+    public enum Function {
+        Sync,
+        Confirm,
+        Send
+    }
 
-    public SyncMessageService() {
+    public enum Result {
+        AuthFailed,
+        NetworkDataError,
+        NetworkError,
+        UnkownError,
+        Synchronized,
+        Updated,
+        Sent,
+        Confirmed
+    }
+
+    public static final String FUNCTION_TYPE = "FUNCTION_TYPE";
+    public static final String SEND_DESTINATION   = "DESTINATION";
+    public static final String SEND_CONTENT       = "CONTENT";
+    public static final String CONFIRM_SRC_ID        = "SRC_ID";
+    public static final String CONFIRM_MSG_ID        = "MSG_ID";
+    public static final String RESULT_CODE = "RESULT_CODE";
+    public static final String RESULT_HINT = "RESULT_HINT";
+    private static final String TAG = "MessageService";
+
+    public MessageService() {
         super(TAG);
     }
 
@@ -68,31 +85,53 @@ public class SyncMessageService extends IntentService {
         boolean isUpdateSuccess = false;
         boolean updated = false;
         String hint;
-        int result;
+        Result result;
 
         try {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm.getActiveNetworkInfo() == null)
+            if (cm.getActiveNetworkInfo() == null) {
                 throw new NetworkException("No connection available");
-            if (user == null) throw new AuthException("No user is loged in");
-            updated = user.sync(null);
-            isUpdateSuccess = true;
-            result = updated ? SYNC_UPDATED : SYNC_OK;
-            hint = getString(R.string.last_update_from) + user.getLastSyncTime().toSimpleString();
+            }
+            if (user == null) {
+                throw new AuthException("No user is loged in");
+            }
+
+            Function function = (Function) intent.getSerializableExtra(FUNCTION_TYPE);
+            if (function == Function.Send) {
+                String dst = intent.getStringExtra(SEND_DESTINATION);
+                String content = intent.getStringExtra(SEND_CONTENT);
+                user.sendMessage(dst, content);
+                result = Result.Sent;
+                hint = getString(R.string.send_message_OK);
+            } else if (function == Function.Confirm) {
+                int srcId = intent.getIntExtra(CONFIRM_SRC_ID, -1);
+                int msgId = intent.getIntExtra(CONFIRM_MSG_ID, -1);
+                user.confirmMessage(srcId, msgId);
+                result = Result.Confirmed;
+                hint = getString(R.string.confirm_message_OK);
+            } else {
+                updated = user.sync(null);
+                isUpdateSuccess = true;
+                result = updated ? Result.Updated : Result.Synchronized;
+                hint = getString(R.string.last_update_from) + user.getLastSyncTime().toSimpleString();
+            }
         } catch (NetworkException e) {
-            result = SYNC_NETWORK_ERROR;
+            result = Result.NetworkError;
             hint = getString(R.string.error_network);
         } catch (NetworkDataException e) {
-            result = SYNC_NETWORK_DATA_ERROR;
+            result = Result.NetworkDataError;
             hint = getString(R.string.error_network_data);
         } catch (AuthException e) {
-            result = SYNC_AUTH_FAILED;
+            result = Result.AuthFailed;
             hint = getString(R.string.error_auth_fail);
+        } catch (HintException e) {
+            result = Result.UnkownError;
+            hint = e.getMessage();
         }
 
         Intent broadcastIntent = new Intent(Configure.BROADCAST_UPDATE_ACTION);
-        broadcastIntent.putExtra(SYNC_RESULT, result);
-        broadcastIntent.putExtra(SYNC_RESULT_HINT, hint);
+        broadcastIntent.putExtra(RESULT_CODE, result);
+        broadcastIntent.putExtra(RESULT_HINT, hint);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);
         if (!userManager.isMainActivityRunning() && user != null) {
             List<InboxItem> unconfirmedInboxItems = user.getUnconfirmedInboxItems();
@@ -141,7 +180,7 @@ public class SyncMessageService extends IntentService {
     public static void setUpdate(int latency, int period) {
         Context context = MyApplication.getAppContext();
         Logger.i(TAG, "setUpdate latency:" + latency + ", period:" + period);
-        Intent i = new Intent(context, SyncMessageService.class);
+        Intent i = new Intent(context, MessageService.class);
         PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -155,7 +194,7 @@ public class SyncMessageService extends IntentService {
     }
 
     public static void cancelUpdate(Context context) {
-        Intent i = new Intent(context, SyncMessageService.class);
+        Intent i = new Intent(context, MessageService.class);
         PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pi);

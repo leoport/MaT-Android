@@ -27,7 +27,7 @@ import org.leopub.mat.UserManager;
 import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.NetworkException;
 import org.leopub.mat.service.ConfirmMessageService;
-import org.leopub.mat.service.SyncMessageService;
+import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -155,7 +155,7 @@ public class LoginActivity extends Activity {
                 User mUser = new User(MyApplication.getAppContext(), Integer.valueOf(username));
                 HttpUtil.auth(mUser, password);
                 mUserManager.setCurrentUser(mUser);
-                Intent intent = new Intent(LoginActivity.this, SyncMessageService.class);
+                Intent intent = new Intent(LoginActivity.this, MessageService.class);
                 startService(intent);
             } catch (NetworkException e) {
                 result = getString(R.string.error_network);
