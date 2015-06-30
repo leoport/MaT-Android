@@ -50,7 +50,7 @@ public class ComposeActivity extends Activity {
     private User mUser;
     private List<Contact> mContactsToChoose;
     private String mReceivers;
-    private SendMsgReceiver mReceiver;
+    private MessageBroadcastReceiver mBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class ComposeActivity extends Activity {
         }
 
         EditText toEditText = (EditText) findViewById(R.id.compose_to);
-        toEditText.addTextChangedListener(new TextWatcher(){
+        toEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 String str = s.toString();
@@ -77,16 +77,24 @@ public class ComposeActivity extends Activity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
         });
         showSendProgress(false);
-        //initBroadcoastReceiver();
-        mReceiver = new SendMsgReceiver();
+        mBroadcastReceiver = new MessageBroadcastReceiver();
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver, filter);
     }
 
+    @Override
+    public void onDestroy() {
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).unregisterReceiver(mBroadcastReceiver);
+        super.onDestroy();
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -98,19 +106,11 @@ public class ComposeActivity extends Activity {
 
     @Override
     public void onResume() {
-        /*
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Configure.BROADCAST_SEND_MSG_ACTION);
-        registerReceiver(mReceiver, filter); */
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mReceiver , filter);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        //unregisterReceiver(mReceiver);
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).unregisterReceiver(mReceiver);
         super.onPause();
     }
 
@@ -140,8 +140,8 @@ public class ComposeActivity extends Activity {
     }
 
     private void showSendProgress(boolean showProgress) {
-        ((EditText)findViewById(R.id.compose_to)).setFocusableInTouchMode(!showProgress);
-        ((EditText)findViewById(R.id.compose_content)).setFocusableInTouchMode(!showProgress);
+        findViewById(R.id.compose_to).setFocusableInTouchMode(!showProgress);
+        findViewById(R.id.compose_content).setFocusableInTouchMode(!showProgress);
         if (showProgress) {
             findViewById(R.id.compose_progress).setVisibility(View.VISIBLE);
             findViewById(R.id.compose_send).setVisibility(View.GONE);
@@ -200,8 +200,8 @@ public class ComposeActivity extends Activity {
         toView.setSelection(mReceivers.length());
     }
 
-    private class SendMsgReceiver extends BroadcastReceiver {
-        private SendMsgReceiver() {}
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        private MessageBroadcastReceiver() {}
 
         public void onReceive(Context context, Intent intent) {
             MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
