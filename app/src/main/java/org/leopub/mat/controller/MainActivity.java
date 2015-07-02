@@ -17,107 +17,108 @@
 package org.leopub.mat.controller;
 
 import org.leopub.mat.Configure;
-import org.leopub.mat.MyApplication;
+import org.leopub.mat.DateTime;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
+import org.leopub.mat.model.InboxItem;
+import org.leopub.mat.model.ItemStatus;
+import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.ListActivity;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.TabHost;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
     private UserManager mUserManager;
     private User mUser;
-    private TabHost mTabHost;
-    private Fragment mFragments[];
-    private String mTabTags[];
-    private int mTabTagIds[] = {R.string.action_inbox, R.string.action_sent, R.string.action_user};
+    private PrivateBroadcastReceiver mBroadcastReceiver;
+    private SwipeRefreshLayout mSwipeView;
+    List<InboxItem> mItemList;
+    ArrayAdapter<InboxItem> mArrayAdapter;
+    DateTime mDataTimestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_main);
 
         mUserManager = UserManager.getInstance();
         mUser = mUserManager.getCurrentUser();
-        initBroadcoastReceiver();
 
-        setContentView(R.layout.activity_main);
+        mItemList = new ArrayList<>();
+        mDataTimestamp = mUser.getLastUpdateTime();
+        mItemList.addAll(mUser.getUnconfirmedInboxItems());
 
-        int nTab = mTabTagIds.length;
-        mFragments = new Fragment[nTab];
-        mFragments[0] = new InboxFragment();
-        mFragments[1] = new SentFragment();
-        mFragments[2] = new UserFragment();
-
-        mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-        mTabHost.setup();
-
-        mTabTags = new String[nTab];
-        for (int i = 0; i < nTab; i++) {
-            mTabTags[i] = getString(mTabTagIds[i]);
-            setupTab(new TextView(this), mTabTags[i]);
-        }
-
-        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        mSwipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        mSwipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onTabChanged(String tabId) {
-                int nTab = mTabTagIds.length;
-                for (int i = 0; i < nTab; i++) {
-                    if (tabId.equals(mTabTags[i])) {
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .replace(android.R.id.tabcontent, mFragments[i])
-                                .commit();
-                        break;
-                    }
-                }
+            public void onRefresh() {
+                mSwipeView.setRefreshing(true);
+                Intent intent = new Intent(MainActivity.this, MessageService.class);
+                intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Sync);
+                startService(intent);
             }
         });
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(android.R.id.tabcontent, mFragments[0])
-                .commit();
 
-        Intent updateIntent = new Intent(this, MessageService.class);
-        startService(updateIntent);
-    }
+        mArrayAdapter = new PrivateArrayAdapter(this, R.layout.list_item, R.id.item_content, mItemList);
+        ListView listView = getListView();
+        listView.setAdapter(mArrayAdapter);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+            }
 
-    @Override
-    public void onPause() {
-        mUserManager.setMainActivityRunning(false);
-        super.onPause();
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                mSwipeView.setEnabled(firstVisibleItem == 0);
+            }
+        });
+
+        startService(new Intent(this, MessageService.class));
+        mBroadcastReceiver = new PrivateBroadcastReceiver();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+
         mUserManager.setMainActivityRunning(true);
-        mUser = mUserManager.getCurrentUser();
-        if (mUser == null || !mUser.isLogedIn()){
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivity(loginIntent);
-        } else {
-            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            nm.cancel(0);
-        }
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.cancel(0);
+
+        updateView();
+    }
+
+    @Override
+    public void onPause() {
+        mUserManager.setMainActivityRunning(false);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -131,53 +132,88 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Class<? extends Activity> clazz = null;
+        if(item.getItemId() == R.id.action_personal_info){
+            clazz = PersonalInfoActivity.class;
+        }
+        if (clazz != null) {
+            startActivity(new Intent(this, clazz));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         moveTaskToBack(true);
     }
 
-    protected void notifySyncEvent(boolean updated) {
-        InboxFragment inboxFragment = (InboxFragment)mFragments[0];
-        inboxFragment.notifySyncEvent(updated);
-
-        SentFragment sentFragment = (SentFragment)mFragments[1];
-        sentFragment.notifySyncEvent(updated);
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Intent intent = new Intent(this, InboxItemActivity.class);
+        int[] params = { mItemList.get(position).getMsgId() };
+        intent.putExtra(InboxItemActivity.INBOX_ITEM_MSG_ID, params);
+        startActivity(intent);
     }
 
-    private void setupTab(final View view, final String tag) {
-        View tabView = createTabView(this, tag);
-        TabHost.TabSpec setContent = mTabHost.newTabSpec(tag).setIndicator(tabView).setContent(new TabHost.TabContentFactory() {
-            public View createTabContent(String tag) { return view; }
-        });
-        mTabHost.addTab(setContent);
+    private void updateView() {
+        DateTime now = mUser.getLastUpdateTime();
+        if (now.compareTo(mDataTimestamp) != 0) {
+            mDataTimestamp = now;
+            mItemList.clear();
+            mItemList.addAll(mUser.getUnconfirmedInboxItems());
+            mArrayAdapter.notifyDataSetChanged();
+        }
     }
 
-    private static View createTabView(final Context context, final String text) {
-        View view = LayoutInflater.from(context).inflate(R.layout.tab_bg, null);
-        TextView tv = (TextView) view.findViewById(R.id.tabsText);
-        tv.setText(text);
-        return view;
-    }
+    private class PrivateArrayAdapter extends ArrayAdapter<InboxItem> {
+        public PrivateArrayAdapter(Context context, int resource, int textViewId, List<InboxItem> items) {
+            super(context, resource, textViewId, items);
+        }
 
-    private void initBroadcoastReceiver() {
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        UpdateStateReceiver receiver = new UpdateStateReceiver();
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(receiver, filter);
-    }
-
-    private class UpdateStateReceiver extends BroadcastReceiver {
-        private UpdateStateReceiver() {}
-
-        public void onReceive(Context context, Intent intent) {
-            if (mUserManager.isMainActivityRunning()) {
-                MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
-                if (result == MessageService.Result.Updated) {
-                    notifySyncEvent(true);
-                } else {
-                    notifySyncEvent(false);
-                }
-                String hint =  intent.getStringExtra(MessageService.RESULT_HINT);
-                Toast.makeText(MainActivity.this, hint, Toast.LENGTH_LONG).show();
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.list_item, parent, false);
             }
+            InboxItem item = getItem(position);
+            TextView contentView = (TextView) convertView.findViewById(R.id.item_content) ;
+            contentView.setText(item.getContent());
+
+            TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left);
+            leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
+
+            String rightHint = "";
+            if (item.getStatus() == ItemStatus.Init) {
+                rightHint = getString(R.string.please_confirm);
+            }
+            TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right);
+            rightHintView.setText(rightHint);
+            return convertView;
+        }
+    }
+
+    private class PrivateBroadcastReceiver extends MessageBroadcastReceiver {
+        private PrivateBroadcastReceiver() {
+            super(MainActivity.this);
+        }
+
+        @Override
+        public boolean onReceiveEvent(MessageService.Result result, String hint) {
+            if (result == MessageService.Result.Updated) {
+                updateView();
+            }
+            mSwipeView.setRefreshing(false);
+            return false;
         }
     }
 }

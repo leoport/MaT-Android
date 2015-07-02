@@ -26,12 +26,11 @@ import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.NetworkException;
+import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -45,8 +44,7 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity {
     private UserManager mUserManager;
-    private User mUser;
-    private MessageBroadcastReceiver mBroadcastReceiver;
+    private PrivateBroadcastReceiver mBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,39 +52,31 @@ public class LoginActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
         mUserManager = UserManager.getInstance();
-        mUser = mUserManager.getCurrentUser();
-        mBroadcastReceiver = new MessageBroadcastReceiver();
 
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver, filter);
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
+        mBroadcastReceiver = new PrivateBroadcastReceiver();
     }
 
     @Override
     public void onResume() {
-        fillAccount();
+        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver, filter);
+
+        User currentUser = mUserManager.getCurrentUser();
+        if (currentUser != null) {
+            if (currentUser.isLogedIn()) {
+                startActivity(new Intent(this, MainActivity.class));
+            } else {
+                setUsernameAndPassword(currentUser);
+                showLoginProgress(false);
+            }
+        }
         super.onResume();
     }
 
     @Override
-    public void onDestroy() {
+    public void onPause() {
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).unregisterReceiver(mBroadcastReceiver);
         super.onPause();
-    }
-
-    public void fillAccount() {
-        if (mUser != null) {
-            EditText usernameView = (EditText) findViewById(R.id.username);
-            usernameView.setText(String.valueOf(mUser.getUserId()));
-
-            EditText passwordView = (EditText) findViewById(R.id.password);
-            passwordView.setText("");
-        }
     }
 
     public void onLogin(View view) {
@@ -97,13 +87,6 @@ public class LoginActivity extends Activity {
         String password = passwordView.getText().toString();
 
         new NetworkTask().execute(username, password);
-    }
-
-    public void onLogout(View view) {
-        EditText passwordView = (EditText) findViewById(R.id.password);
-        passwordView.setText("");
-
-        mUserManager.logoutCurrentUser();
     }
 
     public void onSwithUser(View view) {
@@ -118,14 +101,21 @@ public class LoginActivity extends Activity {
         builder.setItems(usernames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mUser = mUserManager.getUsers().get(which);
-                mUserManager.setCurrentUser(mUser);
-                fillAccount();
+                User user = mUserManager.getUsers().get(which);
+                mUserManager.setCurrentUser(user);
+                setUsernameAndPassword(user);
             }
         });
         builder.create().show();
     }
 
+    private void setUsernameAndPassword(User user) {
+        EditText usernameView = (EditText) findViewById(R.id.username);
+        usernameView.setText(String.valueOf(user.getUserId()));
+
+        EditText passwordView = (EditText) findViewById(R.id.password);
+        passwordView.setText("");
+    }
     private void showLoginProgress(boolean showProgress) {
         findViewById(R.id.username).setFocusableInTouchMode(!showProgress);
         findViewById(R.id.password).setFocusableInTouchMode(!showProgress);
@@ -175,18 +165,19 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private class MessageBroadcastReceiver extends BroadcastReceiver {
-        private MessageBroadcastReceiver() {}
+    private class PrivateBroadcastReceiver extends MessageBroadcastReceiver {
+        public PrivateBroadcastReceiver() {
+            super(LoginActivity.this);
+        }
 
-        public void onReceive(Context context, Intent intent) {
-            showLoginProgress(false);
-            MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
-            String hint = intent.getStringExtra(MessageService.RESULT_HINT);
+        @Override
+        public boolean onReceiveEvent(MessageService.Result result, String hint) {
             if (result == MessageService.Result.Updated || result == MessageService.Result.Synchronized) {
-                finish();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
             } else {
                 Toast.makeText(LoginActivity.this, hint, Toast.LENGTH_LONG).show();
             }
+            return true;
         }
     }
 }
