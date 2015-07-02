@@ -141,11 +141,26 @@ public class MainActivity extends ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Class<? extends Activity> clazz = null;
-        if(item.getItemId() == R.id.action_personal_info){
-            clazz = PersonalInfoActivity.class;
+        switch (item.getItemId()) {
+            case R.id.action_personal_info:
+                clazz = PersonalInfoActivity.class;
+                break;
+            case R.id.action_compose:
+                clazz = ComposeActivity.class;
+                break;
+            case R.id.action_settings:
+                clazz = SettingsActivity.class;
+                break;
+            case R.id.action_change_password:
+                clazz = ChangePasswordActivity.class;
+                break;
         }
         if (clazz != null) {
             startActivity(new Intent(this, clazz));
+            return true;
+        } else if (item.getItemId() == R.id.action_logout) {
+            mUserManager.logoutCurrentUser();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
