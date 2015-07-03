@@ -63,10 +63,11 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_refreshable_list);
 
         mUserManager = UserManager.getInstance();
         mUser = mUserManager.getCurrentUser();
+        mBroadcastReceiver = new PrivateBroadcastReceiver();
 
         mItemList = new ArrayList<>();
         mDataTimestamp = mUser.getLastUpdateTime();
@@ -98,20 +99,23 @@ public class MainActivity extends ListActivity {
         });
 
         startService(new Intent(this, MessageService.class));
-        mBroadcastReceiver = new PrivateBroadcastReceiver();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+        if (mUser.isLogedIn()) {
+            IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
 
-        mUserManager.setMainActivityRunning(true);
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(0);
+            mUserManager.setMainActivityRunning(true);
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.cancel(0);
 
-        updateView();
+            updateView();
+        } else {
+            finish();
+        }
     }
 
     @Override
@@ -144,6 +148,12 @@ public class MainActivity extends ListActivity {
         switch (item.getItemId()) {
             case R.id.action_personal_info:
                 clazz = PersonalInfoActivity.class;
+                break;
+            case R.id.action_inbox:
+                clazz = InboxActivity.class;
+                break;
+            case R.id.action_sent:
+                clazz = SentActivity.class;
                 break;
             case R.id.action_compose:
                 clazz = ComposeActivity.class;

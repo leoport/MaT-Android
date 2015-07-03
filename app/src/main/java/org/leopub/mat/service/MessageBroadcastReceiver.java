@@ -37,7 +37,7 @@ public class MessageBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
         String hint = intent.getStringExtra(MessageService.RESULT_HINT);
-        if (onReceiveEvent(result, hint)) {
+        if (!onReceiveEvent(result, hint)) {
             Toast.makeText(context, hint, Toast.LENGTH_LONG).show();
             if (result == MessageService.Result.AuthFailed) {
                 mActivity.finish();

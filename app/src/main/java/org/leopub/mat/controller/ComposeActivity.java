@@ -21,28 +21,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.leopub.mat.Configure;
-import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.Contact;
+import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
     private final static String KEY_RECEIVERS = "receivers";
@@ -50,7 +48,9 @@ public class ComposeActivity extends Activity {
     private User mUser;
     private List<Contact> mContactsToChoose;
     private String mReceivers;
-    private MessageBroadcastReceiver mBroadcastReceiver;
+    private LocalBroadcastManager mBroadcastManager;
+    private IntentFilter mBroadcastFilter;
+    private PrivateBroadcastReceiver mBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,16 +85,11 @@ public class ComposeActivity extends Activity {
             }
         });
         showSendProgress(false);
-        mBroadcastReceiver = new MessageBroadcastReceiver();
-        IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver, filter);
+        mBroadcastManager = LocalBroadcastManager.getInstance(this);
+        mBroadcastFilter = new IntentFilter(Configure.BROADCAST_MESSAGE);
+        mBroadcastReceiver = new PrivateBroadcastReceiver();
     }
 
-    @Override
-    public void onDestroy() {
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).unregisterReceiver(mBroadcastReceiver);
-        super.onDestroy();
-    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -107,15 +102,17 @@ public class ComposeActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        mBroadcastManager.registerReceiver(mBroadcastReceiver, mBroadcastFilter);
     }
 
     @Override
     public void onPause() {
+        mBroadcastManager.unregisterReceiver(mBroadcastReceiver);
         super.onPause();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         savedInstanceState.putString(KEY_RECEIVERS, mReceivers);
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -200,18 +197,19 @@ public class ComposeActivity extends Activity {
         toView.setSelection(mReceivers.length());
     }
 
-    private class MessageBroadcastReceiver extends BroadcastReceiver {
-        private MessageBroadcastReceiver() {}
+    private class PrivateBroadcastReceiver extends MessageBroadcastReceiver {
+        private PrivateBroadcastReceiver() {
+            super(ComposeActivity.this);
+        }
 
-        public void onReceive(Context context, Intent intent) {
-            MessageService.Result result = (MessageService.Result)intent.getSerializableExtra(MessageService.RESULT_CODE);
-            String hint = intent.getStringExtra(MessageService.RESULT_HINT);
-            Toast.makeText(ComposeActivity.this, hint, Toast.LENGTH_LONG).show();
+        @Override
+        public boolean onReceiveEvent(MessageService.Result result, String hint) {
             if (result == MessageService.Result.Sent) {
-                onBackPressed();
+                finish();
             } else {
                 showSendProgress(false);
             }
+            return false;
         }
     }
 }
