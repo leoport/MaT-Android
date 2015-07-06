@@ -16,177 +16,47 @@
 
 package org.leopub.mat.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.leopub.mat.Configure;
-import org.leopub.mat.DateTime;
-import org.leopub.mat.MyApplication;
 import org.leopub.mat.R;
-import org.leopub.mat.User;
-import org.leopub.mat.UserManager;
 import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.ItemStatus;
-import org.leopub.mat.service.MessageBroadcastReceiver;
-import org.leopub.mat.service.MessageService;
 
-import android.app.ListActivity;
-import android.app.ListFragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class InboxActivity extends ListActivity {
-    private User mUser;
-    private SwipeRefreshLayout mSwipeView;
-    List<InboxItem> mItemList;
-    DateTime mDataTimestamp;
-    ArrayAdapter<InboxItem> mArrayAdapter;
-    private LocalBroadcastManager mBroadcastManager;
-    private IntentFilter mBroadcastFilter;
-    private MessageBroadcastReceiver mBroadcastReceiver;
-
+public class InboxActivity extends MessageListActivity<InboxItem> {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_refreshable_list);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mUser = UserManager.getInstance().getCurrentUser();
-
-        mBroadcastManager = LocalBroadcastManager.getInstance(this);
-        mBroadcastFilter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        mBroadcastReceiver = new PrivateBroadcastReceiver();
-
-        mItemList = new ArrayList<>();
-        mDataTimestamp = mUser.getLastUpdateTime();
-        mItemList.addAll(mUser.getInboxItems());
-
-        mSwipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
-        mSwipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeView.setRefreshing(true);
-                Intent intent = new Intent(InboxActivity.this, MessageService.class);
-                intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Sync);
-                startService(intent);
-            }
-        });
-
-        mArrayAdapter = new PrivateArrayAdapter(this, R.layout.list_item, R.id.item_content, mItemList);
-        ListView listView = getListView();
-        listView.setAdapter(mArrayAdapter);
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                mSwipeView.setEnabled(firstVisibleItem == 0);
-            }
-        });
+    protected List<InboxItem> getListItems() {
+        return mUser.getInboxItems();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+    protected void buildItemView(View convertView, int position) {
+        InboxItem item = mItemList.get(position);
+        TextView contentView = (TextView) convertView.findViewById(R.id.item_content);
+        contentView.setText(item.getContent());
+
+        TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left);
+        leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
+
+        String rightHint = "";
+        if (item.getStatus() == ItemStatus.Init) {
+            rightHint = getString(R.string.please_confirm);
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mBroadcastManager.registerReceiver(mBroadcastReceiver, mBroadcastFilter);
-        updateView();
-    }
-
-    @Override
-    public void onPause() {
-        mBroadcastManager.unregisterReceiver(mBroadcastReceiver);
-        super.onPause();
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
+        TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right);
+        rightHintView.setText(rightHint);
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Intent intent = new Intent(this, InboxItemActivity.class);
-        int[] params = { mUser.getInboxItems().get(position).getMsgId() };
+        int[] params = {mUser.getInboxItems().get(position).getMsgId()};
         intent.putExtra(InboxItemActivity.INBOX_ITEM_MSG_ID, params);
         startActivity(intent);
     }
-
-    private void updateView() {
-        DateTime now = mUser.getLastUpdateTime();
-        if (now.compareTo(mDataTimestamp) != 0) {
-            mDataTimestamp = now;
-            mItemList.clear();
-            mItemList.addAll(mUser.getInboxItems());
-            mArrayAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private class PrivateArrayAdapter extends ArrayAdapter<InboxItem> {
-        public PrivateArrayAdapter(Context context, int resource, int textViewId, List<InboxItem> items) {
-            super(context, resource, textViewId, items);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item, parent, false);
-            }
-            InboxItem item = getItem(position);
-            TextView contentView = (TextView) convertView.findViewById(R.id.item_content) ;
-            contentView.setText(item.getContent());
-
-            TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left); 
-            leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
-
-            String rightHint = "";
-            if (item.getStatus() == ItemStatus.Init) {
-                rightHint = getString(R.string.please_confirm);
-            }
-            TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right); 
-            rightHintView.setText(rightHint);
-            return convertView;
-        }
-    }
-
-    private class PrivateBroadcastReceiver extends MessageBroadcastReceiver {
-        private PrivateBroadcastReceiver() {
-            super(InboxActivity.this);
-        }
-
-        @Override
-        public boolean onReceiveEvent(MessageService.Result result, String hint) {
-            if (result == MessageService.Result.Updated) {
-                updateView();
-            } else {
-                mSwipeView.setRefreshing(false);
-            }
-            return false;
-        }
-    }
 }
+
