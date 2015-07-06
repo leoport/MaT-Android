@@ -23,12 +23,26 @@ import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.ItemStatus;
 
 import android.content.Intent;
-import android.view.MenuItem;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class InboxActivity extends MessageListActivity<InboxItem> {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActionBar().setDisplayHomeAsUpEnabled(true);;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Intent intent = new Intent(this, InboxItemActivity.class);
+        int[] params = {mUser.getInboxItems().get(position).getMsgId()};
+        intent.putExtra(InboxItemActivity.INBOX_ITEM_MSG_ID, params);
+        startActivity(intent);
+    }
+
     @Override
     protected List<InboxItem> getListItems() {
         return mUser.getInboxItems();
@@ -49,14 +63,6 @@ public class InboxActivity extends MessageListActivity<InboxItem> {
         }
         TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right);
         rightHintView.setText(rightHint);
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Intent intent = new Intent(this, InboxItemActivity.class);
-        int[] params = {mUser.getInboxItems().get(position).getMsgId()};
-        intent.putExtra(InboxItemActivity.INBOX_ITEM_MSG_ID, params);
-        startActivity(intent);
     }
 }
 

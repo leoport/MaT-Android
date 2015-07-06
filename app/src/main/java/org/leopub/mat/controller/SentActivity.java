@@ -22,11 +22,25 @@ import org.leopub.mat.R;
 import org.leopub.mat.model.SentItem;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class SentActivity extends MessageListActivity<SentItem> {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActionBar().setDisplayHomeAsUpEnabled(true);;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Intent intent = new Intent(this, SentItemActivity.class);
+        intent.putExtra(SentItemActivity.SENT_ITEM_MSG_ID, mUser.getSentItems().get(position).getMsgId());
+        startActivity(intent);
+    }
+
     @Override
     protected List<SentItem> getListItems() {
         return mUser.getSentItems();
@@ -40,11 +54,5 @@ public class SentActivity extends MessageListActivity<SentItem> {
 
         TextView itemInfoView = (TextView) convertView.findViewById(R.id.item_hint_left);
         itemInfoView.setText(item.getProgress() + "  " + item.getDstTitle());
-    }
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Intent intent = new Intent(this, SentItemActivity.class);
-        intent.putExtra(SentItemActivity.SENT_ITEM_MSG_ID, mUser.getSentItems().get(position).getMsgId());
-        startActivity(intent);
     }
 }
