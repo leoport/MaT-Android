@@ -16,6 +16,7 @@
 
 package org.leopub.mat.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.leopub.mat.R;
@@ -32,37 +33,50 @@ public class InboxActivity extends MessageListActivity<InboxItem> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);;
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Intent intent = new Intent(this, InboxItemActivity.class);
-        int[] params = {mUser.getInboxItems().get(position).getMsgId()};
-        intent.putExtra(InboxItemActivity.INBOX_ITEM_MSG_ID, params);
-        startActivity(intent);
+        InboxItem item = mItemList.get(position);
+        if (item != null) {
+            Intent intent = new Intent(this, InboxItemActivity.class);
+            int[] params = {item.getMsgId()};
+            intent.putExtra(InboxItemActivity.INBOX_ITEM_MSG_ID, params);
+            startActivity(intent);
+        }
     }
 
     @Override
     protected List<InboxItem> getListItems() {
-        return mUser.getInboxItems();
+        List<InboxItem> items = new ArrayList<>();
+        items.addAll(mUser.getInboxItems());
+        while (items.size() < ITEM_NUM_IN_A_PAGE) {
+            items.add(null);
+        }
+        return items;
     }
 
     @Override
     protected void buildItemView(View convertView, int position) {
-        InboxItem item = mItemList.get(position);
         TextView contentView = (TextView) convertView.findViewById(R.id.item_content);
-        contentView.setText(item.getContent());
-
         TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left);
-        leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
-
-        String rightHint = "";
-        if (item.getStatus() == ItemStatus.Init) {
-            rightHint = getString(R.string.please_confirm);
-        }
         TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right);
-        rightHintView.setText(rightHint);
+
+        InboxItem item = mItemList.get(position);
+        if (item != null) {
+            contentView.setText(item.getContent());
+            leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
+            String rightHint = "";
+            if (item.getStatus() == ItemStatus.Init) {
+                rightHint = getString(R.string.please_confirm);
+            }
+            rightHintView.setText(rightHint);
+        } else {
+            contentView.setText("");
+            leftHintView.setText("");
+            rightHintView.setText("");
+        }
     }
 }
 

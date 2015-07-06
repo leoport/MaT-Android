@@ -44,6 +44,8 @@ import java.util.List;
 
 
 public abstract class MessageListActivity<MessageItem> extends ListActivity {
+    public final int ITEM_NUM_IN_A_PAGE = 10;
+
     protected User mUser;
     private SwipeRefreshLayout mSwipeView;
     List<MessageItem> mItemList;

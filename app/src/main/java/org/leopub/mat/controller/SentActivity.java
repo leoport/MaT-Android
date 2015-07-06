@@ -16,6 +16,7 @@
 
 package org.leopub.mat.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.leopub.mat.R;
@@ -31,28 +32,40 @@ public class SentActivity extends MessageListActivity<SentItem> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);;
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Intent intent = new Intent(this, SentItemActivity.class);
-        intent.putExtra(SentItemActivity.SENT_ITEM_MSG_ID, mUser.getSentItems().get(position).getMsgId());
-        startActivity(intent);
+        SentItem item = mItemList.get(position);
+        if (item != null) {
+            Intent intent = new Intent(this, SentItemActivity.class);
+            intent.putExtra(SentItemActivity.SENT_ITEM_MSG_ID, item.getMsgId());
+            startActivity(intent);
+        }
     }
 
     @Override
     protected List<SentItem> getListItems() {
-        return mUser.getSentItems();
+        List<SentItem> items = new ArrayList<>();
+        items.addAll(mUser.getSentItems());
+        while (items.size() < ITEM_NUM_IN_A_PAGE) {
+            items.add(null);
+        }
+        return items;
     }
 
     @Override
     protected void buildItemView(View convertView, int position) {
-        SentItem item = mItemList.get(position);
-        TextView itemContentView = (TextView) convertView.findViewById(R.id.item_content);
-        itemContentView.setText(item.getContent());
-
         TextView itemInfoView = (TextView) convertView.findViewById(R.id.item_hint_left);
-        itemInfoView.setText(item.getProgress() + "  " + item.getDstTitle());
+        TextView itemContentView = (TextView) convertView.findViewById(R.id.item_content);
+        SentItem item = mItemList.get(position);
+        if (item != null) {
+            itemContentView.setText(item.getContent());
+            itemInfoView.setText(item.getProgress() + "  " + item.getDstTitle());
+        } else {
+            itemContentView.setText("");
+            itemInfoView.setText("");
+        }
     }
 }
