@@ -14,18 +14,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fa5320f-9b2f-475c-9d64-9abacdf6b995" name="Default" comment="">
-      <change type="DELETED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\java\org\leopub\mat\controller\UserFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\res\layout\activity_main.xml" afterPath="" />
-      <change type="DELETED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\res\layout\fragment_inbox.xml" afterPath="" />
-      <change type="DELETED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\res\layout\fragment_user.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ComposeActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ComposeActivity.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MessageListActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/service/MessageBroadcastReceiver.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/service/MessageBroadcastReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\java\org\leopub\mat\controller\InboxFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/InboxActivity.java" />
-      <change type="MOVED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\java\org\leopub\mat\controller\SentFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/SentActivity.java" />
-      <change type="MOVED" beforePath="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\res\layout\fragment_sent.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_refreshable_list.xml" />
     </list>
     <ignored path="MaT-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -98,12 +90,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.437788">
+              <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1921#1955#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MessageListActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MessageListActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="65" column="57" selection-start-line="65" selection-start-column="57" selection-end-line="65" selection-end-column="57" />
-              <folding />
+              <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#5558#0" expanded="false" />
+                <marker date="1436152416192" expanded="true" signature="2001:3639" placeholder="{...}" />
+                <marker date="1436152416192" expanded="true" signature="3682:3905" placeholder="{...}" />
+                <marker date="1436152416192" expanded="true" signature="3947:4067" placeholder="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InboxActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/InboxActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#6948#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#4436#4437#0" expanded="false" />
+                <element signature="e#4460#4461#0" expanded="false" />
+                <element signature="e#6215#6249#0" expanded="false" />
+                <element signature="e#6578#6579#0" expanded="false" />
+                <element signature="e#6627#6628#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -113,11 +141,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-              <folding>
-                <element signature="e#1708#1730#0" expanded="true" />
-                <element signature="e#1902#1924#0" expanded="true" />
-                <element signature="e#2091#2112#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -127,19 +151,13 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="98" column="48" selection-start-line="98" selection-start-column="48" selection-end-line="98" selection-end-column="48" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InboxActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/InboxActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="94" column="12" selection-start-line="94" selection-start-column="12" selection-end-line="94" selection-end-column="12" />
               <folding>
-                <element signature="e#4436#4437#0" expanded="true" />
-                <element signature="e#4460#4461#0" expanded="true" />
+                <element signature="e#0#5445#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#3744#3745#0" expanded="false" />
+                <element signature="e#3776#3777#0" expanded="false" />
+                <element signature="e#3819#3820#0" expanded="false" />
+                <element signature="e#3850#3851#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -149,21 +167,27 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ComposeActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="58" column="54" selection-start-line="58" selection-start-column="54" selection-end-line="58" selection-end-column="54" />
+              <caret line="55" column="55" selection-start-line="55" selection-start-column="55" selection-end-line="55" selection-end-column="55" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#0#7743#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#6258#6292#0" expanded="false" />
+                <element signature="e#7386#7387#0" expanded="false" />
+                <element signature="e#7437#7438#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SentActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="SentActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/SentActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.61290324">
-              <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="153" column="85" selection-start-line="153" selection-start-column="85" selection-end-line="153" selection-end-column="85" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#0#6442#0" expanded="false" />
+                <element signature="e#6073#6074#0" expanded="false" />
+                <element signature="e#6121#6122#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -1501,10 +1525,11 @@
         <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ComposeActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/service/MessageBroadcastReceiver.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_sent.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/InboxActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/SentActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MessageListActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -1550,6 +1575,17 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="AndroidView">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MaT-Android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="PackagesPane">
         <subPane>
           <PATH>
@@ -1602,19 +1638,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="drawable" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Problems" />
-      </pane>
-      <pane id="AndroidView">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MaT-Android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -1923,13 +1946,15 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
+      <pane id="Scope">
+        <subPane subId="Problems" />
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
-    <property name="settings.editor.selected.configurable" value="IntelliLang.Configuration" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../keystore" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="AISWSGZDTCRWJ7W8" />
@@ -1948,6 +1973,9 @@
       <recent name="E:\Liang\Code\StudioProjects\MaT-Android\app\src" />
       <recent name="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\java\org\leopub\mat\controller" />
       <recent name="E:\Liang\Code\StudioProjects\MaT-Android\app\src\main\res\drawable" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.leopub.mat.controller" />
     </key>
   </component>
   <component name="RunManager" selected="Android Application.app">
@@ -2258,7 +2286,13 @@
       <option name="project" value="LOCAL" />
       <updated>1435829414830</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Remove Tabs and begin to use actionbar.&#10;The main view will display unconfirmed message and tasks">
+      <created>1435913975597</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1435913975597</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TodoView">
@@ -2278,15 +2312,14 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.41977078" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.5802292" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.35605007" sideWeight="0.48280802" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295129" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295129" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.491404" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.4512894" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.48567334" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295129" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.35605007" sideWeight="0.63610315" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.35605007" sideWeight="0.517192" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -2300,6 +2333,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295129" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.49426934" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -2350,13 +2384,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/tab_bg.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2245863">
           <caret line="5" column="50" selection-start-line="5" selection-start-column="50" selection-end-line="5" selection-end-column="50" />
         </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="file://D:/Green/Android/sdk/sources/android-22/android/app/ActivityThread.java">
@@ -2388,13 +2422,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/tab_bg_selector.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
         </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/tab_text_selector.xml">
@@ -2573,13 +2607,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_login.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.37623763">
           <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
         </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/service/MessageService.java">
@@ -2608,7 +2642,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="75" column="12" selection-start-line="75" selection-start-column="12" selection-end-line="75" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2616,40 +2649,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.7442396">
           <caret line="39" column="32" selection-start-line="39" selection-start-column="32" selection-end-line="39" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_refreshable_list.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.84653467">
           <caret line="18" column="34" selection-start-line="18" selection-start-column="34" selection-end-line="18" selection-end-column="34" />
           <folding>
-            <element signature="e#244#277#0" expanded="true" />
-            <element signature="e#302#337#0" expanded="true" />
-            <element signature="e#363#398#0" expanded="true" />
-            <element signature="e#422#455#0" expanded="true" />
-            <element signature="e#958#978#0" expanded="true" />
+            <element signature="e#244#277#0" expanded="false" />
+            <element signature="e#302#337#0" expanded="false" />
+            <element signature="e#363#398#0" expanded="false" />
+            <element signature="e#422#455#0" expanded="false" />
+            <element signature="e#958#978#0" expanded="false" />
           </folding>
         </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ChangePasswordActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.437788">
           <caret line="37" column="8" selection-start-line="37" selection-start-column="8" selection-end-line="37" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="65" column="57" selection-start-line="65" selection-start-column="57" selection-end-line="65" selection-end-column="57" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2657,7 +2680,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2665,17 +2687,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.656682">
           <caret line="37" column="54" selection-start-line="37" selection-start-column="54" selection-end-line="37" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ComposeActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="58" column="54" selection-start-line="58" selection-start-column="54" selection-end-line="58" selection-end-column="54" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2683,11 +2694,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-          <folding>
-            <element signature="e#1708#1730#0" expanded="true" />
-            <element signature="e#1902#1924#0" expanded="true" />
-            <element signature="e#2091#2112#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2695,6 +2702,47 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="98" column="48" selection-start-line="98" selection-start-column="48" selection-end-line="98" selection-end-column="48" />
+          <folding>
+            <element signature="e#0#5445#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#3744#3745#0" expanded="false" />
+            <element signature="e#3776#3777#0" expanded="false" />
+            <element signature="e#3819#3820#0" expanded="false" />
+            <element signature="e#3850#3851#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/SentActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="153" column="85" selection-start-line="153" selection-start-column="85" selection-end-line="153" selection-end-column="85" />
+          <folding>
+            <element signature="e#0#6442#0" expanded="false" />
+            <element signature="e#6073#6074#0" expanded="false" />
+            <element signature="e#6121#6122#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/ComposeActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="55" column="55" selection-start-line="55" selection-start-column="55" selection-end-line="55" selection-end-column="55" />
+          <folding>
+            <element signature="e#0#7743#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#6258#6292#0" expanded="false" />
+            <element signature="e#7386#7387#0" expanded="false" />
+            <element signature="e#7437#7438#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Green/Android/sdk/sources/android-22/java/util/List.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.48156682">
+          <caret line="26" column="17" selection-start-line="26" selection-start-column="17" selection-end-line="26" selection-end-column="17" />
           <folding />
         </state>
       </provider>
@@ -2702,20 +2750,39 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/InboxActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="94" column="12" selection-start-line="94" selection-start-column="12" selection-end-line="94" selection-end-column="12" />
+          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
           <folding>
-            <element signature="e#4436#4437#0" expanded="true" />
-            <element signature="e#4460#4461#0" expanded="true" />
+            <element signature="e#0#6948#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#4436#4437#0" expanded="false" />
+            <element signature="e#4460#4461#0" expanded="false" />
+            <element signature="e#6215#6249#0" expanded="false" />
+            <element signature="e#6578#6579#0" expanded="false" />
+            <element signature="e#6627#6628#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/SentActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MessageListActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.61290324">
-          <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#5558#0" expanded="false" />
+            <marker date="1436152416192" expanded="true" signature="2001:3639" placeholder="{...}" />
+            <marker date="1436152416192" expanded="true" signature="3682:3905" placeholder="{...}" />
+            <marker date="1436152416192" expanded="true" signature="3947:4067" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.437788">
+          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#1921#1955#0" expanded="true" />
           </folding>
         </state>
       </provider>
