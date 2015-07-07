@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -30,6 +31,11 @@ public class DateTime implements Comparable<DateTime> {
     private static SimpleDateFormat sDigitDateFormat    = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 
     private GregorianCalendar mCalendar;
+
+    public DateTime() {
+        mCalendar = new GregorianCalendar();
+        mCalendar.setTime(new Date());
+    }
 
     public DateTime(long time) {
         mCalendar = new GregorianCalendar();
@@ -62,5 +68,45 @@ public class DateTime implements Comparable<DateTime> {
 
     public String toDigitString() {
         return sDigitDateFormat.format(mCalendar.getTime());
+    }
+
+    public int getYear() {
+        return mCalendar.get(Calendar.YEAR);
+    }
+
+    public void setYear(int year) {
+        mCalendar.set(Calendar.YEAR, year);
+    }
+
+    public int getMonth() {
+        return mCalendar.get(Calendar.MONTH);
+    }
+
+    public void setMonth(int month) {
+        mCalendar.set(Calendar.MONTH, month);
+    }
+
+    public int getDay() {
+        return mCalendar.get(Calendar.DAY_OF_MONTH);
+    }
+
+    public void setDay(int day) {
+        mCalendar.set(Calendar.DAY_OF_MONTH, day);
+    }
+
+    public int getHour() {
+        return mCalendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public void setHour(int hour) {
+        mCalendar.set(Calendar.HOUR_OF_DAY, hour);
+    }
+
+    public int getMinute() {
+        return mCalendar.get(Calendar.MINUTE);
+    }
+
+    public void setMinute(int minute) {
+        mCalendar.set(Calendar.MINUTE, minute);
     }
 }

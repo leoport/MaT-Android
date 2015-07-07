@@ -70,7 +70,7 @@ public class InboxItemActivity extends Activity {
         updateView();
         mBroadcastReceiver = new MessageBroadcastReceiver();
         IntentFilter filter = new IntentFilter(Configure.BROADCAST_MESSAGE);
-        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver , filter);
+        LocalBroadcastManager.getInstance(MyApplication.getAppContext()).registerReceiver(mBroadcastReceiver, filter);
     }
 
     @Override
@@ -84,16 +84,39 @@ public class InboxItemActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.inbox_item, menu);
         menu.findItem(R.id.action_roger).setVisible(mItem.getStatus() == ItemStatus.Init);
+        menu.findItem(R.id.action_remind).setVisible(mItem.getStatus() == ItemStatus.Ignored || mItem.getStatus() == ItemStatus.Accomplished);
+        menu.findItem(R.id.action_ignore).setVisible(mItem.getStatus() != ItemStatus.Ignored);
+        menu.findItem(R.id.action_accomplish).setVisible(mItem.getStatus() != ItemStatus.Accomplished);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_roger){
-            onRoger();
-            return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        ItemStatus itemStatus = ItemStatus.Init;
+        if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
+        }
+
+        switch (item.getItemId()) {
+            case R.id.action_remind:
+            case R.id.action_roger:
+                itemStatus = ItemStatus.Confirmed;
+                break;
+            case R.id.action_ignore:
+                itemStatus = ItemStatus.Ignored;
+                break;
+            case R.id.action_accomplish:
+                itemStatus = ItemStatus.Accomplished;
+                break;
+        }
+        if (itemStatus != ItemStatus.Init) {
+            Intent intent = new Intent(MyApplication.getAppContext(), MessageService.class);
+            intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.SetStatus);
+            intent.putExtra(MessageService.CONFIRM_SRC_ID, mItem.getSrcId());
+            intent.putExtra(MessageService.CONFIRM_MSG_ID, mItem.getMsgId());
+            intent.putExtra(MessageService.CONFIRM_STATUS, itemStatus.ordinal());
+            startService(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -118,13 +141,6 @@ public class InboxItemActivity extends Activity {
     public void onPause() {
         super.onPause();
     }
-    public void onRoger() {
-        Intent intent = new Intent(MyApplication.getAppContext(), MessageService.class);
-        intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Confirm);
-        intent.putExtra(MessageService.CONFIRM_SRC_ID, mItem.getSrcId());
-        intent.putExtra(MessageService.CONFIRM_MSG_ID, mItem.getMsgId());
-        startService(intent);
-    }
     private void updateView() {
         invalidateOptionsMenu();
 
@@ -132,9 +148,22 @@ public class InboxItemActivity extends Activity {
 
         String content = getString(R.string.inbox_item_from) + ": " + mItem.getSrcTitle();
         content += lineSeperator;
-        content += getString(R.string.inbox_item_time) + ": " + mItem.getTimestamp().toSimpleString();
+        content += getString(R.string.inbox_item_post_time) + ": " + mItem.getTimestamp().toSimpleString();
         content += lineSeperator;
-        content += getString(R.string.inbox_item_content) + ": " + mItem.getContent();
+        content += lineSeperator;
+        content += getString(R.string.inbox_item_content) + ": " + mItem.getText();
+        content += lineSeperator;
+        if (mItem.getType() == InboxItem.Type.Meeting) {
+            content += getString(R.string.start_time) + ":" + mItem.getMeetingStartTime().toSimpleString();
+            content += lineSeperator;
+            content += getString(R.string.end_time) + ":" + mItem.getMeetingEndTime().toSimpleString();
+            content += lineSeperator;
+            content += getString(R.string.meeting_place) + ":" + mItem.getMeetingPlace();
+            content += lineSeperator;
+        } else if (mItem.getType() == InboxItem.Type.Task) {
+            content += getString(R.string.deadline) + ":" + mItem.getTaskDeadline().toSimpleString();
+            content += lineSeperator;
+        }
         TextView textView = (TextView) findViewById(R.id.inbox_item_content);
         textView.setText(content);
     }

@@ -52,7 +52,7 @@ public class User {
     private Map<String, String> mMajorStringMap;
     private Map<Character, String> mUnitTitleStringMap;
     private List<InboxItem> mInboxItemsCache;
-    private List<InboxItem> mUnconfirmedInboxItemsCache;
+    private List<InboxItem> mUndoneInboxItemsCache;
     private List<SentItem> mSentItemsCache;
     private DateTime mLastUpdateTimestamp;
     private DateTime mLastSyncTimestamp;
@@ -66,7 +66,7 @@ public class User {
         mCookieId  = null;
 
         mInboxItemsCache = null;
-        mUnconfirmedInboxItemsCache = null;
+        mUndoneInboxItemsCache = null;
         mSentItemsCache = null;
         initStringMap();
         initDatabase();
@@ -174,7 +174,7 @@ public class User {
 
             updated = updateInbox(jsonObj.getJSONArray("inbox")) || updated;
             mInboxItemsCache = null;
-            mUnconfirmedInboxItemsCache = null;
+            mUndoneInboxItemsCache = null;
 
             updated = updateConfirm(jsonObj.getJSONArray("confirm")) || updated;
 
@@ -403,12 +403,12 @@ public class User {
         return item;
     }
 
-    public List<InboxItem> getUnconfirmedInboxItems() {
-        if (mUnconfirmedInboxItemsCache != null) return mUnconfirmedInboxItemsCache;
+    public List<InboxItem> getUndoneInboxItems() {
+        if (mUndoneInboxItemsCache != null) return mUndoneInboxItemsCache;
 
         List<InboxItem> res = new ArrayList<>();
 //inbox (`msg_id` integer PRIMARY KEY, `src_id` integer, `src_title` varchar(40), `content` varchar(2048), `status` integer, `timestamp` timestamp)
-        String sql = "SELECT msg_id, src_id, src_title, content, status, timestamp FROM inbox WHERE status = 0 " +
+        String sql = "SELECT msg_id, src_id, src_title, content, status, timestamp FROM inbox WHERE status < 2 " +
                      "ORDER BY timestamp DESC;";
         Cursor cursor = mDatabase.rawQuery(sql, null);
         while (cursor.moveToNext()) {
@@ -422,7 +422,7 @@ public class User {
             res.add(item);
         }
         cursor.close();
-        mUnconfirmedInboxItemsCache = res;
+        mUndoneInboxItemsCache = res;
         return res;
     }
 
@@ -600,8 +600,8 @@ public class User {
         sync(response);
     }
 
-    public void confirmMessage(int srcId, int msgId) throws AuthException, HintException, NetworkException, NetworkDataException {
-        String url = String.format(Configure.MSG_CONFIRM_URL, srcId, msgId, mLastSyncTimestamp.toDigitString());
+    public void confirmMessage(int srcId, int msgId, int status) throws AuthException, HintException, NetworkException, NetworkDataException {
+        String url = String.format(Configure.MSG_CONFIRM_URL, srcId, msgId, status, mLastSyncTimestamp.toDigitString());
         String response = HttpUtil.getUrl(this, url);
         if (response.charAt(0) != '[' && response.charAt(0) != '{') {
             throw new HintException(mContext.getString(R.string.confirm_msg_fail));

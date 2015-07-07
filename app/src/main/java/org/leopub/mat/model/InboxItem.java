@@ -17,17 +17,30 @@
 package org.leopub.mat.model;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.leopub.mat.DateTime;
 
-import java.util.Date;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 public class InboxItem {
+    public enum Type {
+        Text,
+        Meeting,
+        Task
+    };
     private int mMsgId;
     private int mSrcId;
     private String mSrcTitle;
-    private String mContent;
+    private Type mType;
+    private String mText;
     private ItemStatus mStatus;
     private DateTime mTimestamp;
+    private DateTime mMeetingStartTime;
+    private DateTime mMeetingEndTime;
+    private String mMeetingPlace;
+    private DateTime mTaskDeadline;
 
     public int getMsgId() {
         return mMsgId;
@@ -53,12 +66,49 @@ public class InboxItem {
         mSrcTitle = srcTitle;
     }
 
-    public String getContent() {
-        return mContent;
+    public String getText() {
+        return mText;
+    }
+
+    public Type getType() {
+        return mType;
+    }
+
+    public DateTime getMeetingStartTime() {
+        return mMeetingStartTime;
+    }
+
+    public DateTime getMeetingEndTime() {
+        return mMeetingEndTime;
+    }
+
+    public String getMeetingPlace() {
+        return mMeetingPlace;
+    }
+
+    public DateTime getTaskDeadline() {
+        return mTaskDeadline;
     }
 
     public void setContent(String content) {
-        this.mContent = content;
+        try {
+            String decoded = URLDecoder.decode(content, "utf-8").replace("&quot;", "\"");
+            JSONObject obj = new JSONObject(decoded);
+            mType = Type.valueOf(obj.getString("type"));
+            mText = obj.getString("text");
+            if (mType == Type.Meeting) {
+                mMeetingStartTime = new DateTime(obj.getString("meeting_start_time"));
+                mMeetingEndTime = new DateTime(obj.getString("meeting_end_time"));
+                mMeetingPlace = obj.getString("meeting_place");
+            } else if (mType == Type.Task) {
+                mTaskDeadline = new DateTime(obj.getString("task_deadline"));
+            }
+        } catch (JSONException e) {
+            mType = Type.Text;
+            mText = content;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ItemStatus getStatus() {

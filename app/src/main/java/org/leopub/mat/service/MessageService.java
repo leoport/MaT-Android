@@ -47,7 +47,7 @@ import android.support.v4.content.LocalBroadcastManager;
 public class MessageService extends IntentService {
     public enum Function {
         Sync,
-        Confirm,
+        SetStatus,
         Send
     }
 
@@ -67,6 +67,7 @@ public class MessageService extends IntentService {
     public static final String SEND_CONTENT       = "CONTENT";
     public static final String CONFIRM_SRC_ID        = "SRC_ID";
     public static final String CONFIRM_MSG_ID        = "MSG_ID";
+    public static final String CONFIRM_STATUS        = "STATUS";
     public static final String RESULT_CODE = "RESULT_CODE";
     public static final String RESULT_HINT = "RESULT_HINT";
     private static final String TAG = "MessageService";
@@ -103,10 +104,11 @@ public class MessageService extends IntentService {
                 user.sendMessage(dst, content);
                 result = Result.Sent;
                 hint = getString(R.string.send_message_OK);
-            } else if (function == Function.Confirm) {
+            } else if (function == Function.SetStatus) {
                 int srcId = intent.getIntExtra(CONFIRM_SRC_ID, -1);
                 int msgId = intent.getIntExtra(CONFIRM_MSG_ID, -1);
-                user.confirmMessage(srcId, msgId);
+                int status = intent.getIntExtra(CONFIRM_STATUS, -1);
+                user.confirmMessage(srcId, msgId, status);
                 result = Result.Confirmed;
                 hint = getString(R.string.confirm_message_OK);
             } else {
@@ -134,7 +136,7 @@ public class MessageService extends IntentService {
         broadcastIntent.putExtra(RESULT_HINT, hint);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);
         if (!userManager.isMainActivityRunning() && user != null) {
-            List<InboxItem> unconfirmedInboxItems = user.getUnconfirmedInboxItems();
+            List<InboxItem> unconfirmedInboxItems = user.getUndoneInboxItems();
             if (unconfirmedInboxItems.size() > 0) {
                 setNotification(unconfirmedInboxItems);
             }
@@ -169,7 +171,7 @@ public class MessageService extends IntentService {
             .setSmallIcon(android.R.drawable.ic_dialog_email)
             .setTicker(title)
             .setContentTitle(title)
-            .setContentText(firstItem.getSrcTitle() + ":" + firstItem.getContent())
+            .setContentText(firstItem.getSrcTitle() + ":" + firstItem.getText())
             .setContentIntent(pi)
             .setAutoCancel(true)
             .build();

@@ -18,9 +18,8 @@ package org.leopub.mat.model;
 
 public enum ItemStatus {
     Init,
-    Confirming,
     Confirmed,
-    Accomplishing,
+    Ignored,
     Accomplished;
     private static ItemStatus[] allValues = values();
     public static ItemStatus fromOrdial(int n) { return allValues[n]; }

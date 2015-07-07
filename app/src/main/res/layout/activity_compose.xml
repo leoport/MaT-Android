@@ -1,45 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical" >
-    <EditText
-        android:id="@+id/compose_to"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/compose_scholler"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical"
+    android:fillViewport="true">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lineSpacingExtra="8dp"
-        android:inputType="textMultiLine|textVisiblePassword"
-        android:hint="@string/compose_to"
-        android:textSize="20sp" />
-    <ScrollView
-        android:id="@+id/compose_scholler"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:fillViewport="true">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
         <EditText
-            android:id="@+id/compose_content"
+            android:id="@+id/compose_to"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="8dp"
+            android:inputType="textMultiLine|textVisiblePassword"
+            android:hint="@string/compose_to"
+            android:textSize="20sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:textSize="20sp"
+                android:text="@string/message_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Spinner
+                android:id="@+id/message_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/message_meeting"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_time"/>
+                <EditText
+                    android:id="@+id/meeting_start_time"
+                    android:inputType="datetime"
+                    android:editable="false"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/end_time"/>
+                <EditText
+                    android:id="@+id/meeting_end_time"
+                    android:inputType="datetime"
+                    android:editable="false"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/meeting_place"/>
+                <EditText
+                    android:id="@+id/meeting_place"
+                    android:inputType="text"
+                    android:editable="false"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/message_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/deadline"/>
+            <EditText
+                android:id="@+id/task_deadline"
+                android:inputType="datetime"
+                android:editable="false"
+                android:textSize="20sp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <EditText
+            android:id="@+id/message_text"
             android:singleLine="false"
+            android:minLines="3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:textSize="20sp"
             android:hint="@string/compose_content" />
-    </ScrollView>
-    <Button
-        android:id="@+id/compose_send"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/OK"
-        android:onClick="onSubmit"/>
-    <ProgressBar android:id="@+id/compose_progress"
-      android:layout_width="wrap_content" 
-      android:layout_height="wrap_content"    
-      android:layout_gravity="center" />
-    <EditText
-        android:id="@+id/compose_dummy"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:hint="" />
-</LinearLayout>
+        <Button
+            android:id="@+id/compose_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/OK"
+            android:onClick="onSubmit"/>
+        <ProgressBar android:id="@+id/compose_progress"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center" />
+        <EditText
+            android:id="@+id/compose_dummy"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:hint="" />
+    </LinearLayout>
+</ScrollView>

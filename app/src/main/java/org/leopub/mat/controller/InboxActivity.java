@@ -65,11 +65,15 @@ public class InboxActivity extends MessageListActivity<InboxItem> {
 
         InboxItem item = mItemList.get(position);
         if (item != null) {
-            contentView.setText(item.getContent());
+            contentView.setText(item.getText());
             leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
             String rightHint = "";
             if (item.getStatus() == ItemStatus.Init) {
                 rightHint = getString(R.string.please_confirm);
+            } else if (item.getStatus() == ItemStatus.Ignored) {
+                rightHint = getString(R.string.ignored);
+            } else if (item.getStatus() == ItemStatus.Accomplished) {
+                rightHint = getString(R.string.accomplished);
             }
             rightHintView.setText(rightHint);
         } else {

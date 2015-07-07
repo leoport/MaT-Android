@@ -27,7 +27,7 @@ public class Configure {
     public static final String LOGIN_URL           = "http://leopub.org/auth/login_check.php";
     public static final String CHANGE_PASSWORD_URL = "http://leopub.org/auth/change_password_done.php";
     public static final String MSG_FETCH_URL       = "http://leopub.org/msg/client.php";
-    public static final String MSG_CONFIRM_URL     = "http://leopub.org/msg/confirm_done.php?src=%d&msg=%d&since=%s";
+    public static final String MSG_CONFIRM_URL     = "http://leopub.org/msg/confirm_done.php?src=%d&msg=%d&status=%d&since=%s";
     public static final String MSG_POST_URL        = "http://leopub.org/msg/new_msg_done.php";
     public static final String INFO_PERSON_URL     = "http://leopub.org/info/person/";
     public static final String INFO_CATEGORY_URL   = "http://leopub.org/info/category.php";

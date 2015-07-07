@@ -43,7 +43,7 @@ public class MainActivity extends MessageListActivity<InboxItem> {
     @Override
     protected List<InboxItem> getListItems() {
         List<InboxItem> items = new ArrayList<>();
-        items.addAll(mUser.getUnconfirmedInboxItems());
+        items.addAll(mUser.getUndoneInboxItems());
         while (items.size() < ITEM_NUM_IN_A_PAGE) {
             items.add(null);
         }
@@ -58,11 +58,17 @@ public class MainActivity extends MessageListActivity<InboxItem> {
 
         InboxItem item = mItemList.get(position);
         if (item != null) {
-            contentView.setText(item.getContent());
+            contentView.setText(item.getText());
             leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
             String rightHint = "";
             if (item.getStatus() == ItemStatus.Init) {
                 rightHint = getString(R.string.please_confirm);
+            } else {
+                if (item.getType() == InboxItem.Type.Meeting) {
+                    rightHint = item.getMeetingStartTime().toSimpleString();
+                } else if (item.getType() == InboxItem.Type.Task){
+                    rightHint = item.getTaskDeadline().toSimpleString();
+                }
             }
             rightHintView.setText(rightHint);
         } else {

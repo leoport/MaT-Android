@@ -3,7 +3,21 @@
    <item
         android:id="@+id/action_roger"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/roger"/> 
-
+        android:showAsAction="ifRoom"
+        android:title="@string/roger"/>
+    <item
+        android:id="@+id/action_remind"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/remind"/>
+    <item
+        android:id="@+id/action_ignore"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/ignore"/>
+    <item
+        android:id="@+id/action_accomplish"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/accomplish"/>
 </menu>

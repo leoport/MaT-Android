@@ -378,7 +378,7 @@ public class PersonalInfoActivity extends ListActivity {
             builder.setItems(mInfoItem.getOptions().split(";"), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    String newValue = mInfoItem.getOptions().split(";")[which];
+                    String newValue = mInfoItem.getOptions().split(";")[which].split(":")[0];
                     update(newValue);
                 }
             });
