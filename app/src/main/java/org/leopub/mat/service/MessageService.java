@@ -47,7 +47,7 @@ import android.support.v4.content.LocalBroadcastManager;
 public class MessageService extends IntentService {
     public enum Function {
         Sync,
-        SetStatus,
+        Confirm,
         Send
     }
 
@@ -84,7 +84,7 @@ public class MessageService extends IntentService {
         User user = userManager.getCurrentUser();
         boolean isAutoSync = pref.getBoolean("auto_sync", true);
         boolean isUpdateSuccess = false;
-        boolean updated = false;
+        boolean updated;
         String hint;
         Result result;
 
@@ -104,7 +104,7 @@ public class MessageService extends IntentService {
                 user.sendMessage(dst, content);
                 result = Result.Sent;
                 hint = getString(R.string.send_message_OK);
-            } else if (function == Function.SetStatus) {
+            } else if (function == Function.Confirm) {
                 int srcId = intent.getIntExtra(CONFIRM_SRC_ID, -1);
                 int msgId = intent.getIntExtra(CONFIRM_MSG_ID, -1);
                 int status = intent.getIntExtra(CONFIRM_STATUS, -1);
@@ -136,7 +136,7 @@ public class MessageService extends IntentService {
         broadcastIntent.putExtra(RESULT_HINT, hint);
         LocalBroadcastManager.getInstance(MyApplication.getAppContext()).sendBroadcast(broadcastIntent);
         if (!userManager.isMainActivityRunning() && user != null) {
-            List<InboxItem> unconfirmedInboxItems = user.getUndoneInboxItems();
+            List<InboxItem> unconfirmedInboxItems = user.getUnconfirmedInboxItems();
             if (unconfirmedInboxItems.size() > 0) {
                 setNotification(unconfirmedInboxItems);
             }

@@ -53,6 +53,7 @@ public class User {
     private Map<Character, String> mUnitTitleStringMap;
     private List<InboxItem> mInboxItemsCache;
     private List<InboxItem> mUndoneInboxItemsCache;
+    private List<InboxItem> mUnconfirmedInboxItemsCache;
     private List<SentItem> mSentItemsCache;
     private DateTime mLastUpdateTimestamp;
     private DateTime mLastSyncTimestamp;
@@ -67,6 +68,7 @@ public class User {
 
         mInboxItemsCache = null;
         mUndoneInboxItemsCache = null;
+        mUnconfirmedInboxItemsCache = null;
         mSentItemsCache = null;
         initStringMap();
         initDatabase();
@@ -175,6 +177,7 @@ public class User {
             updated = updateInbox(jsonObj.getJSONArray("inbox")) || updated;
             mInboxItemsCache = null;
             mUndoneInboxItemsCache = null;
+            mUnconfirmedInboxItemsCache = null;
 
             updated = updateConfirm(jsonObj.getJSONArray("confirm")) || updated;
 
@@ -423,6 +426,28 @@ public class User {
         }
         cursor.close();
         mUndoneInboxItemsCache = res;
+        return res;
+    }
+
+    public List<InboxItem> getUnconfirmedInboxItems() {
+        if (mUnconfirmedInboxItemsCache != null) return mUnconfirmedInboxItemsCache;
+
+        List<InboxItem> res = new ArrayList<>();
+        String sql = "SELECT msg_id, src_id, src_title, content, status, timestamp FROM inbox WHERE status=0 " +
+                "ORDER BY timestamp DESC;";
+        Cursor cursor = mDatabase.rawQuery(sql, null);
+        while (cursor.moveToNext()) {
+            InboxItem item = new InboxItem();
+            item.setMsgId(cursor.getInt(0));
+            item.setSrcId(cursor.getInt(1));
+            item.setSrcTitle(cursor.getString(2));
+            item.setContent(cursor.getString(3));
+            item.setStatus(ItemStatus.fromOrdial(cursor.getInt(4)));
+            item.setTimestamp(new DateTime(cursor.getString(5)));
+            res.add(item);
+        }
+        cursor.close();
+        mUnconfirmedInboxItemsCache = res;
         return res;
     }
 

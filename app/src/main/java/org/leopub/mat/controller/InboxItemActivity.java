@@ -112,7 +112,7 @@ public class InboxItemActivity extends Activity {
         }
         if (itemStatus != ItemStatus.Init) {
             Intent intent = new Intent(MyApplication.getAppContext(), MessageService.class);
-            intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.SetStatus);
+            intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Confirm);
             intent.putExtra(MessageService.CONFIRM_SRC_ID, mItem.getSrcId());
             intent.putExtra(MessageService.CONFIRM_MSG_ID, mItem.getMsgId());
             intent.putExtra(MessageService.CONFIRM_STATUS, itemStatus.ordinal());

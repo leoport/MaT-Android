@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public class DateTime implements Comparable<DateTime> {
     private static SimpleDateFormat sCompleteDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-    private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
+    private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM月dd日 HH点mm分", Locale.US);
     private static SimpleDateFormat sDigitDateFormat    = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 
     private GregorianCalendar mCalendar;
