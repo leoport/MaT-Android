@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -55,21 +56,32 @@ public class MainActivity extends MessageListActivity<InboxItem> {
         TextView contentView = (TextView) convertView.findViewById(R.id.item_content) ;
         TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left);
         TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right);
+        ImageView iconView = (ImageView) convertView.findViewById(R.id.item_icon);
 
         InboxItem item = mItemList.get(position);
         if (item != null) {
             contentView.setText(item.getText());
-            leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
+            String leftHint = "";
             String rightHint = "";
+            int iconId;
             if (item.getStatus() == ItemStatus.Init) {
+                leftHint = item.getSrcTitle();
                 rightHint = getString(R.string.please_confirm);
+                iconId = R.drawable.message_init;
             } else {
-                if (item.getType() == InboxItem.Type.Meeting) {
-                    rightHint = item.getMeetingStartTime().toSimpleString();
+                if (item.getType() == InboxItem.Type.Event) {
+                    rightHint = item.getStartTime().toSimpleString() + getString(R.string.start);
+                    iconId = R.drawable.message_event;
                 } else if (item.getType() == InboxItem.Type.Task){
-                    rightHint = item.getTaskDeadline().toSimpleString();
+                    rightHint = getString(R.string.task_close_time) + item.getEndTime().toSimpleString();
+                    iconId = R.drawable.message_task;
+                } else {
+                    iconId = R.drawable.message_text;
                 }
+                leftHint = item.getPlace();
             }
+            iconView.setImageResource(iconId);
+            leftHintView.setText(leftHint);
             rightHintView.setText(rightHint);
         } else {
             contentView.setText("");

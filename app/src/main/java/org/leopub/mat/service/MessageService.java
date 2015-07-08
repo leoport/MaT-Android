@@ -63,11 +63,15 @@ public class MessageService extends IntentService {
     }
 
     public static final String FUNCTION_TYPE = "FUNCTION_TYPE";
-    public static final String SEND_DESTINATION   = "DESTINATION";
-    public static final String SEND_CONTENT       = "CONTENT";
-    public static final String CONFIRM_SRC_ID        = "SRC_ID";
-    public static final String CONFIRM_MSG_ID        = "MSG_ID";
-    public static final String CONFIRM_STATUS        = "STATUS";
+    public static final String SEND_DESTINATION   = "SEND_DESTINATION";
+    public static final String SEND_TYPE       = "SEND_TYPE";
+    public static final String SEND_START_TIME       = "SEND_START_TIME";
+    public static final String SEND_END_TIME       = "SEND_END_TIME";
+    public static final String SEND_PLACE       = "SEND_PLACE";
+    public static final String SEND_TEXT       = "SEND_TEXT";
+    public static final String CONFIRM_SRC_ID        = "CONFIRM_SRC_ID";
+    public static final String CONFIRM_MSG_ID        = "CONFIRM_MSG_ID";
+    public static final String CONFIRM_STATUS        = "CONFIRM_STATUS";
     public static final String RESULT_CODE = "RESULT_CODE";
     public static final String RESULT_HINT = "RESULT_HINT";
     private static final String TAG = "MessageService";
@@ -100,8 +104,12 @@ public class MessageService extends IntentService {
             Function function = (Function) intent.getSerializableExtra(FUNCTION_TYPE);
             if (function == Function.Send) {
                 String dst = intent.getStringExtra(SEND_DESTINATION);
-                String content = intent.getStringExtra(SEND_CONTENT);
-                user.sendMessage(dst, content);
+                int type  = intent.getIntExtra(SEND_TYPE, 0);
+                String startTime = intent.getStringExtra(SEND_START_TIME);
+                String endTime = intent.getStringExtra(SEND_END_TIME);
+                String place = intent.getStringExtra(SEND_PLACE);
+                String text = intent.getStringExtra(SEND_TEXT);
+                user.sendMessage(dst, type, startTime, endTime, place, text);
                 result = Result.Sent;
                 hint = getString(R.string.send_message_OK);
             } else if (function == Function.Confirm) {

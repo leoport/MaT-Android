@@ -28,6 +28,7 @@ import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.Contact;
+import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
 
@@ -56,14 +57,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
-    public enum Type {
-        Text,
-        Meeting,
-        Task;
-        private static Type[] allValues = values();
-        public static Type fromOrdial(int n) { return allValues[n]; }
-    }
-
     private final static String KEY_RECEIVERS = "receivers";
     private final static String KEY_CONTENT = "content";
 
@@ -71,7 +64,7 @@ public class ComposeActivity extends Activity {
     private List<Contact> mContactsToChoose;
     private String mReceivers;
     private String mContent;
-    private Type mMessageType;
+    private InboxItem.Type mMessageType;
     private LocalBroadcastManager mBroadcastManager;
     private IntentFilter mBroadcastFilter;
     private PrivateBroadcastReceiver mBroadcastReceiver;
@@ -86,17 +79,17 @@ public class ComposeActivity extends Activity {
         mReceivers = "";
         mContent = "";
 
-        EditText toEditText = (EditText) findViewById(R.id.compose_to);
+        EditText toEditText = (EditText) findViewById(R.id.compose_dst);
         toEditText.addTextChangedListener(new PrivateTextWatcher());
 
         String[] types = {getString(R.string.message_type_text), getString(R.string.message_type_meeting), getString(R.string.message_type_task)};
-        Spinner spinner = (Spinner) findViewById(R.id.message_type);
+        Spinner spinner = (Spinner) findViewById(R.id.compose_type);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, types);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemSelectedListener(new PrivateSpinnerListener());
 
-        int dateTimeViewId[] = {R.id.meeting_start_time, R.id.meeting_end_time, R.id.task_deadline};
+        int dateTimeViewId[] = {R.id.compose_start_time, R.id.compose_end_time};
         ClickDateTimeListener clickDateTimeListener = new ClickDateTimeListener();
         for (int id : dateTimeViewId) {
             EditText view = (EditText)findViewById(id);
@@ -135,26 +128,11 @@ public class ComposeActivity extends Activity {
         super.onRestoreInstanceState(savedInstanceState);
         mContent = savedInstanceState.getString(KEY_CONTENT);
         mReceivers = savedInstanceState.getString(KEY_RECEIVERS);
-
-        try {
-            JSONObject obj = new JSONObject(mContent);
-            mMessageType = Type.valueOf(obj.getString("type"));
-            if (mMessageType == Type.Meeting) {
-                ((TextView)findViewById(R.id.meeting_start_time)).setText(obj.getString("meeting_start_time"));
-                ((TextView)findViewById(R.id.meeting_end_time)).setText(obj.getString("meeting_end_time"));
-                ((TextView)findViewById(R.id.meeting_place)).setText(obj.getString("meeting_place"));
-            } else if (mMessageType == Type.Task) {
-                ((TextView)findViewById(R.id.task_deadline)).setText(obj.getString("task_deadline"));
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         savedInstanceState.putString(KEY_RECEIVERS, mReceivers);
-        savedInstanceState.putString(KEY_CONTENT, getContentString());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -166,28 +144,30 @@ public class ComposeActivity extends Activity {
             to.append(";");
         }
 
-        EditText contentView = (EditText) findViewById(R.id.message_text);
-        //String contentStr = contentView.getText().toString();
-        String contentStr = getContentString();
+        EditText contentView = (EditText) findViewById(R.id.compose_text);
 
         Intent sendMsgIntent = new Intent(this, MessageService.class);
         sendMsgIntent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Send);
         sendMsgIntent.putExtra(MessageService.SEND_DESTINATION, to.toString());
-        sendMsgIntent.putExtra(MessageService.SEND_CONTENT, contentStr);
+        sendMsgIntent.putExtra(MessageService.SEND_TYPE, mMessageType.ordinal());
+        sendMsgIntent.putExtra(MessageService.SEND_START_TIME, ((EditText)findViewById(R.id.compose_start_time)).getText().toString());
+        sendMsgIntent.putExtra(MessageService.SEND_END_TIME, ((EditText)findViewById(R.id.compose_end_time)).getText().toString());
+        sendMsgIntent.putExtra(MessageService.SEND_PLACE, ((EditText)findViewById(R.id.compose_place)).getText().toString());
+        sendMsgIntent.putExtra(MessageService.SEND_TEXT, ((EditText)findViewById(R.id.compose_text)).getText().toString());
         startService(sendMsgIntent);
         showSendProgress(true);
     }
 
     private void showSendProgress(boolean showProgress) {
-        findViewById(R.id.compose_to).setFocusableInTouchMode(!showProgress);
-        findViewById(R.id.message_text).setFocusableInTouchMode(!showProgress);
+        findViewById(R.id.compose_dst).setFocusableInTouchMode(!showProgress);
+        findViewById(R.id.compose_text).setFocusableInTouchMode(!showProgress);
         if (showProgress) {
             findViewById(R.id.compose_progress).setVisibility(View.VISIBLE);
-            findViewById(R.id.compose_send).setVisibility(View.GONE);
+            findViewById(R.id.compose_submit).setVisibility(View.GONE);
             findViewById(R.id.compose_dummy).requestFocus();
         } else {
             findViewById(R.id.compose_progress).setVisibility(View.GONE);
-            findViewById(R.id.compose_send).setVisibility(View.VISIBLE);
+            findViewById(R.id.compose_submit).setVisibility(View.VISIBLE);
         }
     }
 
@@ -226,7 +206,7 @@ public class ComposeActivity extends Activity {
     private void addSingleReceiver(Contact contact) {
         String str = contact.getId() + "," + contact.getName() + ";";
         mReceivers += str;
-        EditText toView = (EditText) findViewById(R.id.compose_to);
+        EditText toView = (EditText) findViewById(R.id.compose_dst);
         toView.setText(mReceivers);
         toView.setSelection(mReceivers.length());
     }
@@ -234,28 +214,9 @@ public class ComposeActivity extends Activity {
     private void addUnitReceiver(String unitExpr) {
         String str = unitExpr + "," + mUser.getUnitTitle(unitExpr) + ";";
         mReceivers += str;
-        EditText toView = (EditText) findViewById(R.id.compose_to);
+        EditText toView = (EditText) findViewById(R.id.compose_dst);
         toView.setText(mReceivers);
         toView.setSelection(mReceivers.length());
-    }
-
-    private String getContentString() {
-        JSONObject obj = new JSONObject();
-        Spinner spinner =(Spinner)findViewById(R.id.message_type);
-        try {
-            obj.put("type", mMessageType.toString());
-            obj.put("text", ((EditText)findViewById(R.id.message_text)).getText().toString());
-            if (mMessageType == Type.Meeting) {
-                obj.put("meeting_start_time", ((EditText)findViewById(R.id.meeting_start_time)).getText().toString());
-                obj.put("meeting_end_time", ((EditText)findViewById(R.id.meeting_end_time)).getText().toString());
-                obj.put("meeting_place", ((EditText)findViewById(R.id.meeting_place)).getText().toString());
-            } else if (mMessageType == Type.Task) {
-                obj.put("task_deadline", ((EditText)findViewById(R.id.task_deadline)).getText().toString());
-            }
-            return obj.toString();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private class PrivateTextWatcher implements TextWatcher {
@@ -279,9 +240,8 @@ public class ComposeActivity extends Activity {
     private class PrivateSpinnerListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            mMessageType = Type.fromOrdial(pos);
-            findViewById(R.id.message_meeting).setVisibility(mMessageType == Type.Meeting ? View.VISIBLE : View.GONE);
-            findViewById(R.id.message_task).setVisibility(mMessageType == Type.Task ? View.VISIBLE : View.GONE);
+            mMessageType = InboxItem.Type.fromOrdial(pos);
+            findViewById(R.id.compose_time_place).setVisibility(mMessageType != InboxItem.Type.Text ? View.VISIBLE : View.GONE);
         }
 
         @Override

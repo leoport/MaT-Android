@@ -7,16 +7,16 @@
     android:fillViewport="true">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical">
         <EditText
-            android:id="@+id/compose_to"
+            android:id="@+id/compose_dst"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="8dp"
             android:inputType="textMultiLine|textVisiblePassword"
-            android:hint="@string/compose_to"
+            android:hint="@string/message_dst"
             android:textSize="20sp" />
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,12 +28,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <Spinner
-                android:id="@+id/message_type"
+                android:id="@+id/compose_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/message_meeting"
+            android:id="@+id/compose_time_place"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -46,9 +46,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/start_time"/>
                 <EditText
-                    android:id="@+id/meeting_start_time"
-                    android:inputType="datetime"
-                    android:editable="false"
+                    android:id="@+id/compose_start_time"
+                    android:inputType="none"
                     android:textSize="20sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -63,9 +62,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/end_time"/>
                 <EditText
-                    android:id="@+id/meeting_end_time"
-                    android:inputType="datetime"
-                    android:editable="false"
+                    android:id="@+id/compose_end_time"
+                    android:inputType="none"
                     android:textSize="20sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -78,46 +76,27 @@
                     android:textSize="20sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/meeting_place"/>
+                    android:text="@string/place"/>
                 <EditText
-                    android:id="@+id/meeting_place"
-                    android:inputType="text"
-                    android:editable="false"
+                    android:id="@+id/compose_place"
+                    android:inputType="none"
                     android:textSize="20sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
-            android:id="@+id/message_task"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:textSize="20sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/deadline"/>
-            <EditText
-                android:id="@+id/task_deadline"
-                android:inputType="datetime"
-                android:editable="false"
-                android:textSize="20sp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
         <EditText
-            android:id="@+id/message_text"
+            android:id="@+id/compose_text"
             android:singleLine="false"
             android:minLines="3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:textSize="20sp"
-            android:hint="@string/compose_content" />
+            android:hint="@string/message_text" />
         <Button
-            android:id="@+id/compose_send"
+            android:id="@+id/compose_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/OK"

@@ -27,20 +27,21 @@ import java.net.URLDecoder;
 public class InboxItem {
     public enum Type {
         Text,
-        Meeting,
-        Task
+        Event,
+        Task;
+        private static Type[] allValues = values();
+        public static Type fromOrdial(int n) { return allValues[n]; }
     };
     private int mMsgId;
     private int mSrcId;
     private String mSrcTitle;
     private Type mType;
-    private String mText;
     private ItemStatus mStatus;
     private DateTime mTimestamp;
-    private DateTime mMeetingStartTime;
-    private DateTime mMeetingEndTime;
-    private String mMeetingPlace;
-    private DateTime mTaskDeadline;
+    private DateTime mStartTime;
+    private DateTime mEndTime;
+    private String mPlace;
+    private String mText;
 
     public int getMsgId() {
         return mMsgId;
@@ -66,49 +67,44 @@ public class InboxItem {
         mSrcTitle = srcTitle;
     }
 
-    public String getText() {
-        return mText;
-    }
-
     public Type getType() {
         return mType;
     }
 
-    public DateTime getMeetingStartTime() {
-        return mMeetingStartTime;
+    public void setType(Type type) {
+        mType = type;
     }
 
-    public DateTime getMeetingEndTime() {
-        return mMeetingEndTime;
+    public DateTime getStartTime() {
+        return mStartTime;
     }
 
-    public String getMeetingPlace() {
-        return mMeetingPlace;
+    public void setStartTime(DateTime mStartTime) {
+        this.mStartTime = mStartTime;
     }
 
-    public DateTime getTaskDeadline() {
-        return mTaskDeadline;
+    public DateTime getEndTime() {
+        return mEndTime;
     }
 
-    public void setContent(String content) {
-        try {
-            String decoded = URLDecoder.decode(content, "utf-8").replace("&quot;", "\"");
-            JSONObject obj = new JSONObject(decoded);
-            mType = Type.valueOf(obj.getString("type"));
-            mText = obj.getString("text");
-            if (mType == Type.Meeting) {
-                mMeetingStartTime = new DateTime(obj.getString("meeting_start_time"));
-                mMeetingEndTime = new DateTime(obj.getString("meeting_end_time"));
-                mMeetingPlace = obj.getString("meeting_place");
-            } else if (mType == Type.Task) {
-                mTaskDeadline = new DateTime(obj.getString("task_deadline"));
-            }
-        } catch (JSONException e) {
-            mType = Type.Text;
-            mText = content;
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+    public void setEndTime(DateTime mEndTime) {
+        this.mEndTime = mEndTime;
+    }
+
+    public String getPlace() {
+        return mPlace;
+    }
+
+    public void setPlace(String mPlace) {
+        this.mPlace = mPlace;
+    }
+
+    public String getText() {
+        return mText;
+    }
+
+    public void setText(String mText) {
+        this.mText = mText;
     }
 
     public ItemStatus getStatus() {

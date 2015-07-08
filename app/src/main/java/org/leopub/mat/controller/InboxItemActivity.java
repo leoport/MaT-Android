@@ -153,15 +153,12 @@ public class InboxItemActivity extends Activity {
         content += lineSeperator;
         content += getString(R.string.inbox_item_content) + ": " + mItem.getText();
         content += lineSeperator;
-        if (mItem.getType() == InboxItem.Type.Meeting) {
-            content += getString(R.string.start_time) + ":" + mItem.getMeetingStartTime().toSimpleString();
+        if (mItem.getType() != InboxItem.Type.Text) {
+            content += getString(R.string.start_time) + ":" + mItem.getStartTime().toSimpleString();
             content += lineSeperator;
-            content += getString(R.string.end_time) + ":" + mItem.getMeetingEndTime().toSimpleString();
+            content += getString(R.string.end_time) + ":" + mItem.getEndTime().toSimpleString();
             content += lineSeperator;
-            content += getString(R.string.meeting_place) + ":" + mItem.getMeetingPlace();
-            content += lineSeperator;
-        } else if (mItem.getType() == InboxItem.Type.Task) {
-            content += getString(R.string.deadline) + ":" + mItem.getTaskDeadline().toSimpleString();
+            content += getString(R.string.place) + ":" + mItem.getPlace();
             content += lineSeperator;
         }
         TextView textView = (TextView) findViewById(R.id.inbox_item_content);

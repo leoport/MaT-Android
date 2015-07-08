@@ -25,10 +25,12 @@
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="OK">确定</string>
+    <string name="start">开始</string>
+    <string name="task_close_time">截至</string>
     <string name="cancel">取消</string>
     <string name="mat_full">消息与任务</string>
-    <string name="compose_to">收件人</string>
-    <string name="compose_content">内容</string>
+    <string name="message_dst">收件人</string>
+    <string name="message_text">内容</string>
     <string name="type_for_U">老师</string>
     <string name="type_for_S">同学</string>
     <string name="short_name_of_cs">计算机</string>
@@ -99,6 +101,5 @@
     <string name="message_type_task">任务消息</string>
     <string name="start_time">开始时间</string>
     <string name="end_time">结束时间</string>
-    <string name="meeting_place">集合地点</string>
-    <string name="deadline">截止时间</string>
+    <string name="place">地点</string>
 </resources>
