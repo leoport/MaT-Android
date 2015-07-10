@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.NetworkException;
+import org.leopub.mat.model.User;
 
 public class HttpUtil {
     private static void authByHeaders(User user, Map<String, List<String>> headers) throws AuthException {

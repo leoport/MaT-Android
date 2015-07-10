@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leopub.mat;
+package org.leopub.mat.model;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +23,10 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import org.leopub.mat.Configure;
+import org.leopub.mat.Logger;
+import org.leopub.mat.MyApplication;
 
 public class UserManager {
     static UserManager sInstance = null;

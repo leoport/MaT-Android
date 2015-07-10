@@ -20,15 +20,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.leopub.mat.Configure;
-import org.leopub.mat.DateTime;
+import org.leopub.mat.model.DateTime;
 import org.leopub.mat.R;
-import org.leopub.mat.User;
-import org.leopub.mat.UserManager;
+import org.leopub.mat.model.User;
+import org.leopub.mat.model.UserManager;
 import org.leopub.mat.model.Contact;
-import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.MessageType;
 import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
@@ -53,9 +50,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
     private final static String KEY_RECEIVERS = "receivers";

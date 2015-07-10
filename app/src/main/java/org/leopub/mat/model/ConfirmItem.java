@@ -17,8 +17,6 @@
 package org.leopub.mat.model;
 
 
-import org.leopub.mat.DateTime;
-
 public class ConfirmItem {
     private int mId;
     private int mMsgId;

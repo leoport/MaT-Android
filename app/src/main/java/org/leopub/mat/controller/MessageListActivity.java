@@ -32,10 +32,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.leopub.mat.Configure;
-import org.leopub.mat.DateTime;
+import org.leopub.mat.model.DateTime;
 import org.leopub.mat.R;
-import org.leopub.mat.User;
-import org.leopub.mat.UserManager;
+import org.leopub.mat.model.User;
+import org.leopub.mat.model.UserManager;
 import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leopub.mat;
+package org.leopub.mat.model;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -26,12 +26,17 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.leopub.mat.Configure;
+import org.leopub.mat.HttpUtil;
+import org.leopub.mat.Logger;
+import org.leopub.mat.R;
 import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.HintException;
 import org.leopub.mat.exception.NetworkDataException;
 import org.leopub.mat.exception.NetworkException;
 import org.leopub.mat.model.ConfirmItem;
 import org.leopub.mat.model.Contact;
+import org.leopub.mat.model.DateTime;
 import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.MessageStatus;
 import org.leopub.mat.model.MessageType;

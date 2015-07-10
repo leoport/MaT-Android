@@ -19,10 +19,9 @@ package org.leopub.mat.controller;
 import java.util.List;
 
 import org.leopub.mat.R;
-import org.leopub.mat.User;
-import org.leopub.mat.UserManager;
+import org.leopub.mat.model.User;
+import org.leopub.mat.model.UserManager;
 import org.leopub.mat.model.ConfirmItem;
-import org.leopub.mat.model.InboxItem;
 import org.leopub.mat.model.MessageStatus;
 import org.leopub.mat.model.MessageType;
 import org.leopub.mat.model.SentItem;

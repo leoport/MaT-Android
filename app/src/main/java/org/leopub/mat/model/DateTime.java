@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leopub.mat;
+package org.leopub.mat.model;
 
 import android.support.annotation.NonNull;
 

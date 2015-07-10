@@ -17,8 +17,6 @@
 package org.leopub.mat.model;
 
 
-import org.leopub.mat.DateTime;
-
 public class SentItem {
     private int mMsgId;
     private String mDstTitle;
