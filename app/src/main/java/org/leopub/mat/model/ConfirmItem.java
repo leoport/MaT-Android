@@ -24,7 +24,7 @@ public class ConfirmItem {
     private int mMsgId;
     private int mDstId;
     private String mDstTitle;
-    private ItemStatus mStatus;
+    private MessageStatus mStatus;
     private DateTime mTimestamp;
 
     public int getId() {
@@ -59,11 +59,11 @@ public class ConfirmItem {
         mDstTitle = dstTitle;
     }
 
-    public ItemStatus getStatus() {
+    public MessageStatus getStatus() {
         return mStatus;
     }
 
-    public void setStatus(ItemStatus status) {
+    public void setStatus(MessageStatus status) {
         mStatus = status;
     }
 

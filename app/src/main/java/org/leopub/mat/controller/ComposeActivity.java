@@ -29,6 +29,7 @@ import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.Contact;
 import org.leopub.mat.model.InboxItem;
+import org.leopub.mat.model.MessageType;
 import org.leopub.mat.service.MessageBroadcastReceiver;
 import org.leopub.mat.service.MessageService;
 
@@ -58,16 +59,21 @@ import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
     private final static String KEY_RECEIVERS = "receivers";
-    private final static String KEY_CONTENT = "content";
 
     private User mUser;
     private List<Contact> mContactsToChoose;
     private String mReceivers;
-    private String mContent;
-    private InboxItem.Type mMessageType;
+    private MessageType mMessageType;
+    private DateTime mStartTime;
+    private DateTime mEndTime;
     private LocalBroadcastManager mBroadcastManager;
     private IntentFilter mBroadcastFilter;
     private PrivateBroadcastReceiver mBroadcastReceiver;
+    private EditText mInputDst;
+    private EditText mInputStartTime;
+    private EditText mInputEndTime;
+    private EditText mInputPlace;
+    private EditText mInputText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +83,17 @@ public class ComposeActivity extends Activity {
 
         mUser = UserManager.getInstance().getCurrentUser();
         mReceivers = "";
-        mContent = "";
+        mMessageType = MessageType.Text;
+        mStartTime = new DateTime();
+        mEndTime = new DateTime();
 
-        EditText toEditText = (EditText) findViewById(R.id.compose_dst);
-        toEditText.addTextChangedListener(new PrivateTextWatcher());
+        mInputDst = (EditText) findViewById(R.id.compose_dst);
+        mInputStartTime = (EditText) findViewById(R.id.compose_start_time);
+        mInputEndTime = (EditText) findViewById(R.id.compose_end_time);
+        mInputPlace = (EditText) findViewById(R.id.compose_place);
+        mInputText = (EditText) findViewById(R.id.compose_text);
+
+        mInputDst.addTextChangedListener(new PrivateTextWatcher());
 
         String[] types = {getString(R.string.message_type_text), getString(R.string.message_type_meeting), getString(R.string.message_type_task)};
         Spinner spinner = (Spinner) findViewById(R.id.compose_type);
@@ -89,14 +102,13 @@ public class ComposeActivity extends Activity {
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemSelectedListener(new PrivateSpinnerListener());
 
-        int dateTimeViewId[] = {R.id.compose_start_time, R.id.compose_end_time};
-        ClickDateTimeListener clickDateTimeListener = new ClickDateTimeListener();
-        for (int id : dateTimeViewId) {
-            EditText view = (EditText)findViewById(id);
-            view.setText(new DateTime().toCompleteString());
-            view.setOnTouchListener(clickDateTimeListener);
-        }
+        TouchDateTimeListener touchDateTimeListener = new TouchDateTimeListener();
+        mInputStartTime.setText(mStartTime.toSimpleString());
+        mInputStartTime.setOnTouchListener(touchDateTimeListener);
+        mInputEndTime.setText(mEndTime.toSimpleString());
+        mInputEndTime.setOnTouchListener(touchDateTimeListener);
         showSendProgress(false);
+
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
         mBroadcastFilter = new IntentFilter(Configure.BROADCAST_MESSAGE);
         mBroadcastReceiver = new PrivateBroadcastReceiver();
@@ -126,7 +138,6 @@ public class ComposeActivity extends Activity {
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mContent = savedInstanceState.getString(KEY_CONTENT);
         mReceivers = savedInstanceState.getString(KEY_RECEIVERS);
     }
 
@@ -137,23 +148,21 @@ public class ComposeActivity extends Activity {
     }
 
     public void onSubmit(View view) {
-        StringBuilder to = new StringBuilder();
+        StringBuilder dst = new StringBuilder();
         String[] receiverArr = mReceivers.split(";");
         for (String receiver : receiverArr) {
-            to.append(receiver.split(",")[0]);
-            to.append(";");
+            dst.append(receiver.split(",")[0]);
+            dst.append(";");
         }
-
-        EditText contentView = (EditText) findViewById(R.id.compose_text);
 
         Intent sendMsgIntent = new Intent(this, MessageService.class);
         sendMsgIntent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Send);
-        sendMsgIntent.putExtra(MessageService.SEND_DESTINATION, to.toString());
+        sendMsgIntent.putExtra(MessageService.SEND_DESTINATION, dst.toString());
         sendMsgIntent.putExtra(MessageService.SEND_TYPE, mMessageType.ordinal());
-        sendMsgIntent.putExtra(MessageService.SEND_START_TIME, ((EditText)findViewById(R.id.compose_start_time)).getText().toString());
-        sendMsgIntent.putExtra(MessageService.SEND_END_TIME, ((EditText)findViewById(R.id.compose_end_time)).getText().toString());
-        sendMsgIntent.putExtra(MessageService.SEND_PLACE, ((EditText)findViewById(R.id.compose_place)).getText().toString());
-        sendMsgIntent.putExtra(MessageService.SEND_TEXT, ((EditText)findViewById(R.id.compose_text)).getText().toString());
+        sendMsgIntent.putExtra(MessageService.SEND_START_TIME, mStartTime.toCompleteString());
+        sendMsgIntent.putExtra(MessageService.SEND_END_TIME, mEndTime.toCompleteString());
+        sendMsgIntent.putExtra(MessageService.SEND_PLACE, mInputPlace.getText().toString());
+        sendMsgIntent.putExtra(MessageService.SEND_TEXT, mInputText.getText().toString());
         startService(sendMsgIntent);
         showSendProgress(true);
     }
@@ -240,8 +249,8 @@ public class ComposeActivity extends Activity {
     private class PrivateSpinnerListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            mMessageType = InboxItem.Type.fromOrdial(pos);
-            findViewById(R.id.compose_time_place).setVisibility(mMessageType != InboxItem.Type.Text ? View.VISIBLE : View.GONE);
+            mMessageType = MessageType.fromOrdial(pos);
+            findViewById(R.id.compose_time_place).setVisibility(mMessageType != MessageType.Text ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -265,7 +274,7 @@ public class ComposeActivity extends Activity {
         }
     }
 
-    private class ClickDateTimeListener implements View.OnTouchListener {
+    private class TouchDateTimeListener implements View.OnTouchListener {
         private EditText mCurrentDateTimeView;
         private DateTime mDateTime;
 
@@ -273,12 +282,22 @@ public class ComposeActivity extends Activity {
         public boolean onTouch(View view, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 mCurrentDateTimeView = (EditText) view;
-                mDateTime = new DateTime(mCurrentDateTimeView.getText().toString());
+                if (mCurrentDateTimeView == mInputStartTime) {
+                    mDateTime = mStartTime;
+                } else if (mCurrentDateTimeView == mInputEndTime) {
+                    mDateTime = mEndTime;
+                } else {
+                    return false;
+                }
                 new TimePickerDialog(ComposeActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     public void onTimeSet(TimePicker picker, int hour, int minute) {
                         mDateTime.setHour(hour);
                         mDateTime.setMinute(minute);
-                        mCurrentDateTimeView.setText(mDateTime.toCompleteString());
+                        if (mCurrentDateTimeView == mInputStartTime) {
+                            mInputStartTime.setText(mStartTime.toSimpleString());
+                        } else if (mCurrentDateTimeView == mInputEndTime) {
+                            mInputEndTime.setText(mEndTime.toSimpleString());
+                        }
                     }
                 }, mDateTime.getHour(), mDateTime.getMinute(), true).show();
                 new DatePickerDialog(ComposeActivity.this, new DatePickerDialog.OnDateSetListener() {

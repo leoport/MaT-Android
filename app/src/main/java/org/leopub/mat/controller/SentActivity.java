@@ -61,7 +61,7 @@ public class SentActivity extends MessageListActivity<SentItem> {
         TextView itemContentView = (TextView) convertView.findViewById(R.id.item_content);
         SentItem item = mItemList.get(position);
         if (item != null) {
-            itemContentView.setText(item.getContent());
+            itemContentView.setText(item.getText());
             itemInfoView.setText(item.getProgress() + "  " + item.getDstTitle());
         } else {
             itemContentView.setText("");

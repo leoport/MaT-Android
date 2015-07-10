@@ -19,13 +19,15 @@ package org.leopub.mat.model;
 
 import org.leopub.mat.DateTime;
 
-import java.util.Date;
-
 public class SentItem {
     private int mMsgId;
     private String mDstTitle;
-    private String mContent; 
-    private ItemStatus mStatus;
+    private MessageType mType;
+    private DateTime mStartTime;
+    private DateTime mEndTime;
+    private String mPlace;
+    private String mText;
+    private MessageStatus mStatus;
     private DateTime mTimestamp;
     private String mProgress;
 
@@ -45,19 +47,51 @@ public class SentItem {
         mDstTitle = dstTitle;
     }
 
-    public String getContent() {
-        return mContent;
+    public String getText() {
+        return mText;
     }
 
-    public void setContent(String content) {
-        mContent = content;
+    public void setText(String text) {
+        mText = text;
     }
 
-    public ItemStatus getStatus() {
+    public MessageType getType() {
+        return mType;
+    }
+
+    public void setType(MessageType mType) {
+        this.mType = mType;
+    }
+
+    public DateTime getStartTime() {
+        return mStartTime;
+    }
+
+    public void setStartTime(DateTime mStartTime) {
+        this.mStartTime = mStartTime;
+    }
+
+    public DateTime getEndTime() {
+        return mEndTime;
+    }
+
+    public void setEndTime(DateTime mEndTime) {
+        this.mEndTime = mEndTime;
+    }
+
+    public String getPlace() {
+        return mPlace;
+    }
+
+    public void setPlace(String mPlace) {
+        this.mPlace = mPlace;
+    }
+
+    public MessageStatus getStatus() {
         return mStatus;
     }
 
-    public void setStatus(ItemStatus status) {
+    public void setStatus(MessageStatus status) {
         mStatus = status;
     }
 

@@ -111,6 +111,7 @@ public abstract class MessageListActivity<MessageItem> extends ListActivity {
 
     @Override
     public void onPause() {
+        mSwipeView.setRefreshing(false);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         super.onPause();
     }

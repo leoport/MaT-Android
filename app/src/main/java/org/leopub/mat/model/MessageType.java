@@ -16,11 +16,10 @@
 
 package org.leopub.mat.model;
 
-public enum ItemStatus {
-    Init,
-    Confirmed,
-    Ignored,
-    Accomplished;
-    private static ItemStatus[] allValues = values();
-    public static ItemStatus fromOrdial(int n) { return allValues[n]; }
+public enum MessageType {
+    Text,
+    Event,
+    Task;
+    private static MessageType[] allValues = values();
+    public static MessageType fromOrdial(int n) { return allValues[n]; }
 }

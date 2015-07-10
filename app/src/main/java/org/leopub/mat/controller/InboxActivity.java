@@ -21,11 +21,13 @@ import java.util.List;
 
 import org.leopub.mat.R;
 import org.leopub.mat.model.InboxItem;
-import org.leopub.mat.model.ItemStatus;
+import org.leopub.mat.model.MessageStatus;
+import org.leopub.mat.model.MessageType;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -62,19 +64,41 @@ public class InboxActivity extends MessageListActivity<InboxItem> {
         TextView contentView = (TextView) convertView.findViewById(R.id.item_content);
         TextView leftHintView = (TextView) convertView.findViewById(R.id.item_hint_left);
         TextView rightHintView = (TextView) convertView.findViewById(R.id.item_hint_right);
+        ImageView iconView = (ImageView) convertView.findViewById(R.id.item_icon);
 
         InboxItem item = mItemList.get(position);
         if (item != null) {
+            MessageStatus status = item.getStatus();
+            MessageType type = item.getType();
             contentView.setText(item.getText());
-            leftHintView.setText(item.getSrcTitle() + "  " + item.getTimestamp());
+            String leftHint = item.getSrcTitle();
             String rightHint = "";
-            if (item.getStatus() == ItemStatus.Init) {
+            int iconId;
+            if (status == MessageStatus.Init) {
+                rightHintView.setTextColor(0xffff0000);
                 rightHint = getString(R.string.please_confirm);
-            } else if (item.getStatus() == ItemStatus.Ignored) {
-                rightHint = getString(R.string.ignored);
-            } else if (item.getStatus() == ItemStatus.Accomplished) {
-                rightHint = getString(R.string.accomplished);
+                iconId = R.drawable.message_init;
+            } else {
+                if (type == MessageType.Event) {
+                    iconId = R.drawable.message_event;
+                } else if (type == MessageType.Task){
+                    iconId = R.drawable.message_task;
+                } else {
+                    iconId = R.drawable.message_text;
+                }
+                if (status == MessageStatus.Confirmed) {
+                    rightHint = getString(R.string.confirmed);
+                    rightHintView.setTextColor(0xff000000);
+                } else if (status == MessageStatus.Ignored) {
+                    rightHint = getString(R.string.ignored);
+                    rightHintView.setTextColor(0xffc2c2c2);
+                } else if (status == MessageStatus.Accomplished) {
+                    rightHint = getString(R.string.accomplished);
+                    rightHintView.setTextColor(0xffffd39b);
+                }
             }
+            iconView.setImageResource(iconId);
+            leftHintView.setText(leftHint);
             rightHintView.setText(rightHint);
         } else {
             contentView.setText("");

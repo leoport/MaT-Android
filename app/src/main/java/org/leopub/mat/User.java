@@ -26,7 +26,6 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.leopub.mat.controller.ComposeActivity;
 import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.HintException;
 import org.leopub.mat.exception.NetworkDataException;
@@ -34,14 +33,14 @@ import org.leopub.mat.exception.NetworkException;
 import org.leopub.mat.model.ConfirmItem;
 import org.leopub.mat.model.Contact;
 import org.leopub.mat.model.InboxItem;
-import org.leopub.mat.model.ItemStatus;
+import org.leopub.mat.model.MessageStatus;
+import org.leopub.mat.model.MessageType;
 import org.leopub.mat.model.SentItem;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
 
 public class User {
     private Context mContext;
@@ -91,7 +90,7 @@ public class User {
         mDatabase.execSQL("CREATE INDEX IF NOT EXISTS idx_inbox_timestamp ON inbox (`timestamp`);");
         mDatabase.execSQL("CREATE INDEX IF NOT EXISTS idx_inbox_status ON inbox(`status`);");
          // create table sent
-        mDatabase.execSQL("CREATE TABLE IF NOT EXISTS sent (`msg_id` integer PRIMARY KEY, `dst_str` varchar(300), `dst_title` varchar(300), parsm integer, `content` varchar(2048), `status` integer, `timestamp` timestamp);");
+        mDatabase.execSQL("CREATE TABLE IF NOT EXISTS sent (`msg_id` integer PRIMARY KEY, `dst_str` varchar(300), `dst_title` varchar(300), parsm integer, `type` integer, `start_time` datetime, `end_time` datetime, place varchar(160), `text` varchar(2048), `status` integer, `timestamp` timestamp);");
         mDatabase.execSQL("CREATE INDEX IF NOT EXISTS idx_sent_timestamp ON sent (`timestamp`);");
         mDatabase.execSQL("CREATE INDEX IF NOT EXISTS idx_sent_status ON sent (`status`);");
         // create table confirm
@@ -256,11 +255,15 @@ public class User {
             for (int i = 0; i < n; i++) {
                 JSONObject obj = arr.getJSONObject(i);
 //sent (`msg_id` integer PRIMARY KEY, `dst_str` varchar(300), `dst_title` varchar(300), `content` varchar(2048), `status` integer, `timestamp` timestamp)
-                String query = String.format("INSERT OR REPLACE INTO sent VALUES('%s', '%s', '%s', '%s', %s, '%s', '%s');",
+                String query = String.format("INSERT OR REPLACE INTO sent VALUES('%s', '%s', '%s', '%s', %d, %s, %s, %s, %s, '%s', '%s');",
                         obj.getString("msg_id"),
                         obj.getString("dst_str"),
                         getGroupsTitle(obj.getString("dst_str")),
                         obj.getString("param"),
+                        obj.getInt("type"),
+                        DatabaseUtils.sqlEscapeString(obj.getString("start_time")),
+                        DatabaseUtils.sqlEscapeString(obj.getString("end_time")),
+                        DatabaseUtils.sqlEscapeString(obj.getString("place")),
                         DatabaseUtils.sqlEscapeString(obj.getString("text")),
                         obj.getString("status"),
                         obj.getString("timestamp"));
@@ -372,12 +375,12 @@ public class User {
             item.setMsgId(cursor.getInt(0));
             item.setSrcId(cursor.getInt(1));
             item.setSrcTitle(cursor.getString(2));
-            item.setType(InboxItem.Type.fromOrdial(cursor.getInt(3)));
+            item.setType(MessageType.fromOrdial(cursor.getInt(3)));
             item.setStartTime(new DateTime(cursor.getString(4)));
             item.setEndTime(new DateTime(cursor.getString(5)));
             item.setPlace(cursor.getString(6));
             item.setText(cursor.getString(7));
-            item.setStatus(ItemStatus.fromOrdial(cursor.getInt(8)));
+            item.setStatus(MessageStatus.fromOrdial(cursor.getInt(8)));
             item.setTimestamp(new DateTime(cursor.getString(9)));
             res.add(item);
         }
@@ -406,7 +409,7 @@ public class User {
     public List<InboxItem> getUndoneInboxItems() {
         if (mUndoneInboxItemsCache != null) return mUndoneInboxItemsCache;
 
-        List<InboxItem> res = getInboxItemsPrime("WHERE status < 2 ORDER BY timestamp DESC;", null);
+        List<InboxItem> res = getInboxItemsPrime("WHERE status < 2 ORDER BY status, type, end_time, timestamp DESC;", null);
         mUndoneInboxItemsCache = res;
         return res;
     }
@@ -419,51 +422,44 @@ public class User {
         return res;
     }
 
-    public List<SentItem> getSentItems() {
-        if (mSentItemsCache != null) return mSentItemsCache;
-
+    private List<SentItem> getSentItemsPrime(String suffix, String[] params) {
         List<SentItem> res = new ArrayList<>();
-        String sql = "SELECT msg_id, dst_title, content, status, timestamp FROM sent ORDER BY timestamp DESC;";
-        Cursor cursor = mDatabase.rawQuery(sql, null);
+        String sql = "SELECT msg_id, dst_title, type, start_time, end_time, place, text, status, timestamp FROM sent ";
+        Cursor cursor = mDatabase.rawQuery(sql + suffix, params);
         while (cursor.moveToNext()) {
             SentItem item = new SentItem();
             item.setMsgId(cursor.getInt(0));
             item.setDstTitle(cursor.getString(1));
-            item.setContent(cursor.getString(2));
-            item.setStatus(ItemStatus.fromOrdial(cursor.getInt(3)));
-            item.setTimestamp(new DateTime(cursor.getString(4)));
+            item.setType(MessageType.fromOrdial(cursor.getInt(2)));
+            item.setStartTime(new DateTime(cursor.getString(3)));
+            item.setEndTime(new DateTime(cursor.getString(4)));
+            item.setPlace(cursor.getString(5));
+            item.setText(cursor.getString(6));
+            item.setStatus(MessageStatus.fromOrdial(cursor.getInt(7)));
+            item.setTimestamp(new DateTime(cursor.getString(8)));
             item.setProgress(getSentItemProgress(item.getMsgId()));
             res.add(item);
         }
         cursor.close();
+        return res;
+    }
+
+    public List<SentItem> getSentItems() {
+        if (mSentItemsCache != null) return mSentItemsCache;
+
+        List<SentItem> res = getSentItemsPrime("ORDER BY timestamp DESC;", null);
         mSentItemsCache = res;
         return res;
     }
 
     public SentItem getSentItemByMsgId(int msgId) {
-        if (mSentItemsCache != null) {
-            for (SentItem item : mSentItemsCache) {
-                if (item.getMsgId() == msgId) {
-                    return item;
-                }
-            }
-        }
-
-        String sql = "SELECT msg_id, dst_title, content, status, timestamp FROM sent WHERE msg_id=? ORDER BY timestamp DESC;";
         String[] params = { String.valueOf(msgId) };
-        Cursor cursor = mDatabase.rawQuery(sql, params);
-        SentItem item = null;
-        if (cursor.moveToNext()) {
-            item = new SentItem();
-            item.setMsgId(cursor.getInt(0));
-            item.setDstTitle(cursor.getString(1));
-            item.setContent(cursor.getString(2));
-            item.setStatus(ItemStatus.fromOrdial(cursor.getInt(3)));
-            item.setTimestamp(new DateTime(cursor.getString(4)));
-            item.setProgress(getSentItemProgress(item.getMsgId()));
+        List<SentItem> items = getSentItemsPrime("WHERE msg_id=? ORDER BY timestamp DESC;", params);
+        if (items.size() > 0) {
+            return items.get(0);
+        } else {
+            return null;
         }
-        cursor.close();
-        return item;
     }
 
     public List<ConfirmItem> getConfirmItems(int msgId) {
@@ -478,7 +474,7 @@ public class User {
             item.setMsgId(msgId);
             item.setDstId(cursor.getInt(1));
             item.setDstTitle(cursor.getString(2));
-            item.setStatus(ItemStatus.fromOrdial(cursor.getInt(3)));
+            item.setStatus(MessageStatus.fromOrdial(cursor.getInt(3)));
             item.setTimestamp(new DateTime(cursor.getString(4)));
             res.add(item);
         }

@@ -22,7 +22,9 @@ import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.ConfirmItem;
-import org.leopub.mat.model.ItemStatus;
+import org.leopub.mat.model.InboxItem;
+import org.leopub.mat.model.MessageStatus;
+import org.leopub.mat.model.MessageType;
 import org.leopub.mat.model.SentItem;
 
 import android.app.Activity;
@@ -55,11 +57,23 @@ public class SentItemActivity extends Activity {
 
         String lineSeperator = System.getProperty("line.separator");
 
-        String content = getString(R.string.sent_item_to) + ":" + mItem.getDstTitle();
+
+        String content = getString(R.string.inbox_item_from) + ": " + mItem.getDstTitle();
         content += lineSeperator;
-        content += getString(R.string.sent_item_time) + ":" + mItem.getTimestamp().toSimpleString();
+        content += getString(R.string.inbox_item_post_time) + ": " + mItem.getTimestamp().toSimpleString();
         content += lineSeperator;
-        content += getString(R.string.sent_item_content) + ":" + mItem.getContent();
+        content += lineSeperator;
+        content += getString(R.string.inbox_item_content) + ": " + mItem.getText();
+        content += lineSeperator;
+        if (mItem.getType() != MessageType.Text) {
+            content += getString(R.string.start_time) + ":" + mItem.getStartTime().toSimpleString();
+            content += lineSeperator;
+            content += getString(R.string.end_time) + ":" + mItem.getEndTime().toSimpleString();
+            content += lineSeperator;
+            content += getString(R.string.place) + ":" + mItem.getPlace();
+            content += lineSeperator;
+        }
+
         TextView textView = (TextView) findViewById(R.id.sent_item_content);
         textView.setText(content);
     }
@@ -93,7 +107,7 @@ public class SentItemActivity extends Activity {
         String displayItems[] = new String[nConfirmItems];
         for (int i = 0; i < nConfirmItems; i++) {
             ConfirmItem confirmItem = confirmItems.get(i);
-            if (confirmItem.getStatus() == ItemStatus.Init) {
+            if (confirmItem.getStatus() == MessageStatus.Init) {
                 displayItems[i] = confirmItem.getDstTitle() + "\t" + getString(R.string.not_confirmed);
             } else {
                 displayItems[i] = confirmItem.getDstTitle() + "\t" + getString(R.string.confirmed);

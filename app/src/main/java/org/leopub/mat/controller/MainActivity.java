@@ -19,7 +19,8 @@ package org.leopub.mat.controller;
 import org.leopub.mat.R;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.InboxItem;
-import org.leopub.mat.model.ItemStatus;
+import org.leopub.mat.model.MessageStatus;
+import org.leopub.mat.model.MessageType;
 import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
@@ -64,15 +65,17 @@ public class MainActivity extends MessageListActivity<InboxItem> {
             String leftHint = "";
             String rightHint = "";
             int iconId;
-            if (item.getStatus() == ItemStatus.Init) {
+            if (item.getStatus() == MessageStatus.Init) {
+                rightHintView.setTextColor(0xffff0000);
                 leftHint = item.getSrcTitle();
                 rightHint = getString(R.string.please_confirm);
                 iconId = R.drawable.message_init;
             } else {
-                if (item.getType() == InboxItem.Type.Event) {
+                rightHintView.setTextColor(0xff000000);
+                if (item.getType() == MessageType.Event) {
                     rightHint = item.getStartTime().toSimpleString() + getString(R.string.start);
                     iconId = R.drawable.message_event;
-                } else if (item.getType() == InboxItem.Type.Task){
+                } else if (item.getType() == MessageType.Task){
                     rightHint = getString(R.string.task_close_time) + item.getEndTime().toSimpleString();
                     iconId = R.drawable.message_task;
                 } else {

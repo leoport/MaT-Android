@@ -24,7 +24,8 @@ import org.leopub.mat.R;
 import org.leopub.mat.User;
 import org.leopub.mat.UserManager;
 import org.leopub.mat.model.InboxItem;
-import org.leopub.mat.model.ItemStatus;
+import org.leopub.mat.model.MessageStatus;
+import org.leopub.mat.model.MessageType;
 import org.leopub.mat.service.MessageService;
 
 import android.app.ActionBar;
@@ -83,16 +84,16 @@ public class InboxItemActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.inbox_item, menu);
-        menu.findItem(R.id.action_roger).setVisible(mItem.getStatus() == ItemStatus.Init);
-        menu.findItem(R.id.action_remind).setVisible(mItem.getStatus() == ItemStatus.Ignored || mItem.getStatus() == ItemStatus.Accomplished);
-        menu.findItem(R.id.action_ignore).setVisible(mItem.getStatus() != ItemStatus.Ignored);
-        menu.findItem(R.id.action_accomplish).setVisible(mItem.getStatus() != ItemStatus.Accomplished);
+        menu.findItem(R.id.action_roger).setVisible(mItem.getStatus() == MessageStatus.Init);
+        menu.findItem(R.id.action_remind).setVisible(mItem.getStatus() == MessageStatus.Ignored || mItem.getStatus() == MessageStatus.Accomplished);
+        menu.findItem(R.id.action_ignore).setVisible(mItem.getStatus() != MessageStatus.Ignored);
+        menu.findItem(R.id.action_accomplish).setVisible(mItem.getStatus() != MessageStatus.Accomplished);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        ItemStatus itemStatus = ItemStatus.Init;
+        MessageStatus messageStatus = MessageStatus.Init;
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -101,21 +102,21 @@ public class InboxItemActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_remind:
             case R.id.action_roger:
-                itemStatus = ItemStatus.Confirmed;
+                messageStatus = MessageStatus.Confirmed;
                 break;
             case R.id.action_ignore:
-                itemStatus = ItemStatus.Ignored;
+                messageStatus = MessageStatus.Ignored;
                 break;
             case R.id.action_accomplish:
-                itemStatus = ItemStatus.Accomplished;
+                messageStatus = MessageStatus.Accomplished;
                 break;
         }
-        if (itemStatus != ItemStatus.Init) {
+        if (messageStatus != MessageStatus.Init) {
             Intent intent = new Intent(MyApplication.getAppContext(), MessageService.class);
             intent.putExtra(MessageService.FUNCTION_TYPE, MessageService.Function.Confirm);
             intent.putExtra(MessageService.CONFIRM_SRC_ID, mItem.getSrcId());
             intent.putExtra(MessageService.CONFIRM_MSG_ID, mItem.getMsgId());
-            intent.putExtra(MessageService.CONFIRM_STATUS, itemStatus.ordinal());
+            intent.putExtra(MessageService.CONFIRM_STATUS, messageStatus.ordinal());
             startService(intent);
             return true;
         }
@@ -153,7 +154,7 @@ public class InboxItemActivity extends Activity {
         content += lineSeperator;
         content += getString(R.string.inbox_item_content) + ": " + mItem.getText();
         content += lineSeperator;
-        if (mItem.getType() != InboxItem.Type.Text) {
+        if (mItem.getType() != MessageType.Text) {
             content += getString(R.string.start_time) + ":" + mItem.getStartTime().toSimpleString();
             content += lineSeperator;
             content += getString(R.string.end_time) + ":" + mItem.getEndTime().toSimpleString();

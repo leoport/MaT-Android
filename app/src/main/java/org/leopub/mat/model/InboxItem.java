@@ -17,26 +17,14 @@
 package org.leopub.mat.model;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.leopub.mat.DateTime;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 public class InboxItem {
-    public enum Type {
-        Text,
-        Event,
-        Task;
-        private static Type[] allValues = values();
-        public static Type fromOrdial(int n) { return allValues[n]; }
-    };
     private int mMsgId;
     private int mSrcId;
     private String mSrcTitle;
-    private Type mType;
-    private ItemStatus mStatus;
+    private MessageType mType;
+    private MessageStatus mStatus;
     private DateTime mTimestamp;
     private DateTime mStartTime;
     private DateTime mEndTime;
@@ -67,11 +55,11 @@ public class InboxItem {
         mSrcTitle = srcTitle;
     }
 
-    public Type getType() {
+    public MessageType getType() {
         return mType;
     }
 
-    public void setType(Type type) {
+    public void setType(MessageType type) {
         mType = type;
     }
 
@@ -107,11 +95,11 @@ public class InboxItem {
         this.mText = mText;
     }
 
-    public ItemStatus getStatus() {
+    public MessageStatus getStatus() {
         return mStatus;
     }
 
-    public void setStatus(ItemStatus status) {
+    public void setStatus(MessageStatus status) {
         mStatus = status;
     }
 
