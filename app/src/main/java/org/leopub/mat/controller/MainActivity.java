@@ -125,6 +125,9 @@ public class MainActivity extends MessageListActivity<InboxItem> {
     public boolean onOptionsItemSelected(MenuItem item) {
         Class<? extends Activity> clazz = null;
         switch (item.getItemId()) {
+            case R.id.action_calendar:
+                clazz = CalendarActivity.class;
+                break;
             case R.id.action_personal_info:
                 clazz = PersonalInfoActivity.class;
                 break;

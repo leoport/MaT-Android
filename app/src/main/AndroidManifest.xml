@@ -75,6 +75,11 @@
             android:label="@string/personal_info"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".controller.CalendarActivity"
+            android:label="@string/calendar"
+            android:screenOrientation="portrait">
+        </activity>
         <service android:name=".service.MessageService" />
     </application>
 </manifest>
