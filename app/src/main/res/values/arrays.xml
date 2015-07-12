@@ -26,4 +26,22 @@
         <item>30</item>
         <item>60</item>
     </string-array>
+    <string-array name="calendar_days">
+        <item>一</item>
+        <item>二</item>
+        <item>三</item>
+        <item>四</item>
+        <item>五</item>
+        <item>六</item>
+        <item>日</item>
+    </string-array>
+    <string-array name="calendar_hours">
+        <item>8:00</item>
+        <item>10:00</item>
+        <item>12:00</item>
+        <item>14:00</item>
+        <item>16:00</item>
+        <item>18:00</item>
+        <item>20:00</item>
+    </string-array>
 </resources>

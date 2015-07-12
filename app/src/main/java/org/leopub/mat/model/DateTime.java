@@ -109,4 +109,8 @@ public class DateTime implements Comparable<DateTime> {
     public void setMinute(int minute) {
         mCalendar.set(Calendar.MINUTE, minute);
     }
+
+    public int getDayOfWeek() {
+        return mCalendar.get(Calendar.DAY_OF_WEEK);
+    }
 }
