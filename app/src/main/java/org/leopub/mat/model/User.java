@@ -59,6 +59,7 @@ public class User {
     private List<InboxItem> mInboxItemsCache;
     private List<InboxItem> mUndoneInboxItemsCache;
     private List<InboxItem> mUnconfirmedInboxItemsCache;
+    private List<InboxItem> mCalendarInboxItemsCache;
     private List<SentItem> mSentItemsCache;
     private DateTime mLastUpdateTimestamp;
     private DateTime mLastSyncTimestamp;
@@ -74,6 +75,7 @@ public class User {
         mInboxItemsCache = null;
         mUndoneInboxItemsCache = null;
         mUnconfirmedInboxItemsCache = null;
+        mCalendarInboxItemsCache = null;
         mSentItemsCache = null;
         initStringMap();
         initDatabase();
@@ -183,6 +185,7 @@ public class User {
             mInboxItemsCache = null;
             mUndoneInboxItemsCache = null;
             mUnconfirmedInboxItemsCache = null;
+            mCalendarInboxItemsCache = null;
 
             updated = updateConfirm(jsonObj.getJSONArray("confirm")) || updated;
 
@@ -629,13 +632,13 @@ public class User {
         }
     }
 
-    /*
-    private String getLastUpdateTimeDigit() {
-        String lastUpdateTime = getLastUpdateTime();
-        if (lastUpdateTime == null) {
-            lastUpdateTime = "1970-01-01 00:00:01";
-        }
-        return onlyKeepDigit(lastUpdateTime);
+    public List<InboxItem> getCalendarInboxItems(DateTime start, DateTime end) {
+        if (mCalendarInboxItemsCache != null) return mCalendarInboxItemsCache;
+
+        List<InboxItem> res = getInboxItemsPrime("WHERE status = 1 AND type == 1 AND start_time > '"
+                + start.toCompleteString() + "' AND end_time < '" + end.toCompleteString()
+                + "' ORDER BY status, type, end_time, timestamp DESC;", null);
+        mCalendarInboxItemsCache = res;
+        return res;
     }
-    */
 }

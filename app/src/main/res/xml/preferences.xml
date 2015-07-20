@@ -21,4 +21,8 @@
         android:entryValues="@array/retry_sync_period_values"
         android:defaultValue="10"
         android:dependency="auto_sync" />
+    <EditTextPreference
+        android:key="first_day_of_semester"
+        android:title="@string/first_day_of_semester"
+        android:defaultValue="2015-09-07" />
 </PreferenceScreen>

@@ -17,6 +17,7 @@
 package org.leopub.mat.controller;
 
 import org.leopub.mat.R;
+import org.leopub.mat.model.DateTime;
 import org.leopub.mat.service.MessageService;
 
 import android.app.Activity;
@@ -25,6 +26,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity implements OnSharedPreferenceChangeListener {
     @Override
@@ -46,6 +48,14 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
             MessageService.setUpdate(syncPeriod, syncPeriod);
         } else {
             MessageService.cancelUpdate(this);
+        }
+        String defaultFirstDayOfSemester = "2015-09-07";
+        DateTime datetime = new DateTime(preferences.getString("first_day_of_semester", defaultFirstDayOfSemester));
+        if (datetime.getTime() == 0) {
+            Toast.makeText(this, R.string.invalid_date_format, Toast.LENGTH_LONG).show();
+            preferences.edit().putString("first_day_of_semester", defaultFirstDayOfSemester);
+        } else {
+            DateTime.setsFirstDayOfSemester(datetime);
         }
     }
 

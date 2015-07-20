@@ -26,11 +26,19 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class DateTime implements Comparable<DateTime> {
+    final private static long MILLI_SEC_OF_DAY  = 1000 * 60 * 60 * 24;
+    final private static long MILLI_SEC_OF_WEEK = 1000 * 60 * 60 * 24 * 7;
+    private static SimpleDateFormat sOnlyDateFormat     = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private static SimpleDateFormat sCompleteDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM月dd日 HH点mm分", Locale.US);
     private static SimpleDateFormat sDigitDateFormat    = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+    private static DateTime sFirstDayOfSemester         = new DateTime("2015-09-07");
 
     private GregorianCalendar mCalendar;
+
+    public static void setsFirstDayOfSemester(DateTime datetime) {
+        sFirstDayOfSemester = datetime;
+    }
 
     public DateTime() {
         mCalendar = new GregorianCalendar();
@@ -45,7 +53,11 @@ public class DateTime implements Comparable<DateTime> {
     public DateTime(String s) {
         Date date;
         try {
-            date = sCompleteDateFormat.parse(s);
+            if (s.contains(" ")) {
+                date = sCompleteDateFormat.parse(s);
+            } else {
+                date = sOnlyDateFormat.parse(s);
+            }
         } catch (ParseException e) {
             date = new Date(0);
         }
@@ -56,6 +68,11 @@ public class DateTime implements Comparable<DateTime> {
     @Override
     public int compareTo(@NonNull DateTime other) {
         return mCalendar.getTime().compareTo(other.mCalendar.getTime());
+    }
+
+    @Override
+    public String toString() {
+        return toCompleteString();
     }
 
     public String toCompleteString() {
@@ -111,6 +128,32 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     public int getDayOfWeek() {
-        return mCalendar.get(Calendar.DAY_OF_WEEK);
+        return (mCalendar.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+    }
+
+    public long getTime() {
+        return mCalendar.getTimeInMillis();
+    }
+
+    public int getWeek() {
+        return (int)((mCalendar.getTimeInMillis() - sFirstDayOfSemester.mCalendar.getTimeInMillis()) / MILLI_SEC_OF_WEEK);
+    }
+
+    public DateTime getStartOfWeek() {
+        DateTime res = new DateTime(mCalendar.getTimeInMillis() - getDayOfWeek() * MILLI_SEC_OF_DAY);
+        res.mCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        res.mCalendar.clear(Calendar.MINUTE);
+        res.mCalendar.clear(Calendar.SECOND);
+        res.mCalendar.clear(Calendar.MILLISECOND);
+        return res;
+    }
+
+    public DateTime getEndOfWeek() {
+        DateTime res = new DateTime(mCalendar.getTimeInMillis() - getDayOfWeek() * MILLI_SEC_OF_DAY - 1 + MILLI_SEC_OF_WEEK);
+        res.mCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        res.mCalendar.clear(Calendar.MINUTE);
+        res.mCalendar.clear(Calendar.SECOND);
+        res.mCalendar.clear(Calendar.MILLISECOND);
+        return res;
     }
 }

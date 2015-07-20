@@ -18,6 +18,10 @@ package org.leopub.mat;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import org.leopub.mat.model.DateTime;
 
 public class MyApplication extends Application {
     private static Context sContext;
@@ -25,6 +29,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         MyApplication.sContext = getApplicationContext();
+        SharedPreferences preferenceManager = PreferenceManager.getDefaultSharedPreferences(sContext);
+        DateTime.setsFirstDayOfSemester(new DateTime(preferenceManager.getString("first_day_of_semester", "2015-09-07")));
     }
 
     public static Context getAppContext() {

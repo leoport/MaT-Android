@@ -26,6 +26,11 @@ import android.view.View;
 
 import org.leopub.mat.R;
 import org.leopub.mat.model.DateTime;
+import org.leopub.mat.model.InboxItem;
+import org.leopub.mat.model.User;
+import org.leopub.mat.model.UserManager;
+
+import java.util.List;
 
 public class CalendarActivity extends Activity {
     private CalendarView mCalendarView;
@@ -88,7 +93,7 @@ public class CalendarActivity extends Activity {
             mPaint.setTextSize(30);
             canvas.drawRect(mContentOriginX, 0, mContentWidth, mContentOriginY, mDayHeaderBg);
             canvas.drawRect(0, 0, mContentOriginX, mContentHeight, mDayHeaderBg);
-            canvas.drawText("19周", 0, mContentOriginY / 2, mDayHeaderText);
+            canvas.drawText((new DateTime().getWeek() + 1) + getString(R.string.week), 0, mContentOriginY / 2, mDayHeaderText);
             float headerStartY = DAY_HEADER_FONT_SIZE + DAY_HEADER_PADDING;
             for (int i = 0; i < days.length; i++) {
                 if (i == 0) {
@@ -110,7 +115,15 @@ public class CalendarActivity extends Activity {
                 canvas.drawLine(0, y, mContentWidth, y, mPaint);
                 canvas.drawText(hours[i], DAY_HEADER_PADDING, y + headerStartY / 3, mDayHeaderText);
             }
-            addEvent(canvas, new DateTime("2015-07-12 09:00:00"), new DateTime("2015-07-12 11:00:00"), "睡个觉", "10-202");
+            DateTime now = new DateTime();
+            DateTime start = now.getStartOfWeek();
+            DateTime end = now.getEndOfWeek();
+            User user = UserManager.getInstance().getCurrentUser();
+            List<InboxItem> items = user.getCalendarInboxItems(start, end);
+            for (InboxItem item : items) {
+                addEvent(canvas, item.getStartTime(), item.getEndTime(), item.getText(), item.getPlace());
+            }
+            //addEvent(canvas, new DateTime("2015-07-12 09:00:00"), new DateTime("2015-07-12 11:00:00"), "睡个觉", "10-202");
         }
 
         public void addEvent(Canvas canvas, DateTime startTime, DateTime endTime, String title, String place) {
