@@ -28,6 +28,7 @@ import java.util.Locale;
 public class DateTime implements Comparable<DateTime> {
     final private static long MILLI_SEC_OF_DAY  = 1000 * 60 * 60 * 24;
     final private static long MILLI_SEC_OF_WEEK = 1000 * 60 * 60 * 24 * 7;
+    private static SimpleDateFormat sMonthAndDayFormat     = new SimpleDateFormat("MM-dd", Locale.US);
     private static SimpleDateFormat sOnlyDateFormat     = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private static SimpleDateFormat sCompleteDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     private static SimpleDateFormat sSimpleDateFormat   = new SimpleDateFormat("MM月dd日 HH点mm分", Locale.US);
@@ -81,6 +82,10 @@ public class DateTime implements Comparable<DateTime> {
 
     public String toSimpleString() {
         return sSimpleDateFormat.format(mCalendar.getTime());
+    }
+
+    public String toMonthAndDay() {
+        return sMonthAndDayFormat.format(mCalendar.getTime());
     }
 
     public String toDigitString() {
@@ -137,6 +142,10 @@ public class DateTime implements Comparable<DateTime> {
 
     public int getWeek() {
         return (int)((mCalendar.getTimeInMillis() - sFirstDayOfSemester.mCalendar.getTimeInMillis()) / MILLI_SEC_OF_WEEK);
+    }
+
+    public DateTime getNextDay() {
+        return new DateTime(mCalendar.getTimeInMillis() + MILLI_SEC_OF_DAY);
     }
 
     public DateTime getStartOfWeek() {

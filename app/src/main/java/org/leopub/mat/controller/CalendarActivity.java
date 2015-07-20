@@ -89,12 +89,16 @@ public class CalendarActivity extends Activity {
             mContentHeight = getHeight();
             float itemWidth = (mContentWidth - mContentOriginX) / days.length;
             float itemHeight = (mContentHeight - mContentOriginY) / hours.length;
+            DateTime now = new DateTime();
+            DateTime start = now.getStartOfWeek();
+            DateTime end = now.getEndOfWeek();
 
             mPaint.setTextSize(30);
             canvas.drawRect(mContentOriginX, 0, mContentWidth, mContentOriginY, mDayHeaderBg);
             canvas.drawRect(0, 0, mContentOriginX, mContentHeight, mDayHeaderBg);
             canvas.drawText((new DateTime().getWeek() + 1) + getString(R.string.week), 0, mContentOriginY / 2, mDayHeaderText);
             float headerStartY = DAY_HEADER_FONT_SIZE + DAY_HEADER_PADDING;
+            DateTime dayForHeader = new DateTime();
             for (int i = 0; i < days.length; i++) {
                 if (i == 0) {
                     mPaint.setStrokeWidth(5);
@@ -104,6 +108,8 @@ public class CalendarActivity extends Activity {
                 float x = mContentOriginX + i * itemWidth;
                 canvas.drawLine(x, 0, x, mContentHeight, mPaint);
                 canvas.drawText(days[i], x + DAY_HEADER_PADDING, headerStartY, mDayHeaderText);
+                canvas.drawText(dayForHeader.toMonthAndDay(), x + DAY_HEADER_PADDING, headerStartY + 30, mDayHeaderText);
+                dayForHeader = dayForHeader.getNextDay();
             }
             for (int i = 0; i < hours.length; i++) {
                 if (i == 0) {
@@ -115,9 +121,6 @@ public class CalendarActivity extends Activity {
                 canvas.drawLine(0, y, mContentWidth, y, mPaint);
                 canvas.drawText(hours[i], DAY_HEADER_PADDING, y + headerStartY / 3, mDayHeaderText);
             }
-            DateTime now = new DateTime();
-            DateTime start = now.getStartOfWeek();
-            DateTime end = now.getEndOfWeek();
             User user = UserManager.getInstance().getCurrentUser();
             List<InboxItem> items = user.getCalendarInboxItems(start, end);
             for (InboxItem item : items) {
