@@ -14,7 +14,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fa5320f-9b2f-475c-9d64-9abacdf6b995" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MessageListActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/org/leopub/mat/controller/MessageListActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MaT-Android.iws" />
@@ -2338,7 +2337,13 @@
       <option name="project" value="LOCAL" />
       <updated>1437571256778</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Fix the bug &quot;When the first item is partly hidden, it can't scroll up.&quot;">
+      <created>1437574208318</created>
+      <option name="number" value="00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1437574208318</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TodoView">
