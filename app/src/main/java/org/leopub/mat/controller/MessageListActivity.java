@@ -93,11 +93,8 @@ public abstract class MessageListActivity<MessageItem> extends ListActivity {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int y = 0;
-                View childZero = absListView.getChildAt(0);
-                if (childZero != null) {
-                    y = (int)childZero.getY();
-                }
+                View childView = absListView.getChildAt(0);
+                int y = (childView == null) ? 0 : childView.getTop();
                 mSwipeView.setEnabled(firstVisibleItem == 0 && y == 0);
             }
         });
