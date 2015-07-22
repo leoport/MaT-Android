@@ -88,12 +88,17 @@ public abstract class MessageListActivity<MessageItem> extends ListActivity {
         listView.setAdapter(mArrayAdapter);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
+            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
             }
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                mSwipeView.setEnabled(firstVisibleItem == 0);
+                int y = 0;
+                View childZero = absListView.getChildAt(0);
+                if (childZero != null) {
+                    y = (int)childZero.getY();
+                }
+                mSwipeView.setEnabled(firstVisibleItem == 0 && y == 0);
             }
         });
     }
