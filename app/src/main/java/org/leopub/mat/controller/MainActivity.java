@@ -87,6 +87,7 @@ public class MainActivity extends MessageListActivity<InboxItem> {
             leftHintView.setText(leftHint);
             rightHintView.setText(rightHint);
         } else {
+            iconView.setImageResource(0);
             contentView.setText("");
             leftHintView.setText("");
             rightHintView.setText("");

@@ -34,13 +34,6 @@ import org.leopub.mat.exception.AuthException;
 import org.leopub.mat.exception.HintException;
 import org.leopub.mat.exception.NetworkDataException;
 import org.leopub.mat.exception.NetworkException;
-import org.leopub.mat.model.ConfirmItem;
-import org.leopub.mat.model.Contact;
-import org.leopub.mat.model.DateTime;
-import org.leopub.mat.model.InboxItem;
-import org.leopub.mat.model.MessageStatus;
-import org.leopub.mat.model.MessageType;
-import org.leopub.mat.model.SentItem;
 
 import android.content.Context;
 import android.database.Cursor;
